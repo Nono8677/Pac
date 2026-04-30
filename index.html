@@ -1,98 +1,111 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PACHECOIN V16</title>
+    <title>PACHECOIN V20</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #000; --accent: #ff9500; --green: #00ff88; --red: #ff4466; --border: #1a1a1a; }
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: var(--bg); color: var(--accent); font-family: 'Space Mono', monospace; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .container { width: 100%; max-width: 400px; }
-        .header { text-align: center; padding: 10px 0; border-bottom: 2px solid var(--accent); margin-bottom: 15px; width: 100% }
+        .header { text-align: center; padding: 10px 0; border-bottom: 2px solid var(--accent); margin-bottom: 15px; width: 100%; }
         .logo { font-size: 2.8rem; font-weight: 700; letter-spacing: -3px; }
         #timer { font-size: 0.85rem; color: #fff; margin-top: 5px; display: block; font-weight: bold; }
         .tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #111; padding: 5px; border-radius: 12px; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #555; font-family: 'Space Mono'; font-weight: 700; border-radius: 8px; font-size: 0.65rem; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #555; font-family: 'Space Mono'; font-weight: 700; border-radius: 8px; font-size: 0.65rem; cursor: pointer; }
         .tab-btn.active { background: var(--accent); color: #000; }
         .page { display: none; width: 100%; }
         .page.active { display: block; }
         .card { background: #0d0d0d; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; }
-        .val { font-size: 1.5rem; font-weight: 700; }
+        .val { font-size: 1.4rem; font-weight: 700; }
         .signal-box { text-align: center; padding: 25px 0; border: 1px solid var(--border); background: #050505; border-radius: 15px; margin-bottom: 15px; }
-        #sig { font-size: 3.2rem; font-weight: 700; line-height: 1.1; margin-bottom: 15px; text-transform: uppercase; }
-        #price { color: #fff; font-size: 1.8rem; font-weight: 700; margin-bottom: 15px; }
-        #lastPriceInfo { font-size: 0.75rem; color: #666; text-transform: uppercase; }
-        .btn-gen { width: 100%; background: var(--accent); color: #000; border: none; padding: 22px; border-radius: 15px; font-weight: 700; font-family: 'Space Mono'; font-size: 0.9rem; cursor: pointer; }
+        #sig { font-size: 2.8rem; font-weight: 700; line-height: 1.1; margin-bottom: 15px; }
+        #price { color: #fff; font-size: 1.8rem; font-weight: 700; margin-bottom: 5px; }
+        #entryInfo { font-size: 0.6rem; color: #333; margin-bottom: 10px; letter-spacing: 0.05em; }
+        #lastPriceInfo { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; }
+        .btn-gen { width: 100%; background: var(--accent); color: #000; border: none; padding: 22px; border-radius: 15px; font-weight: 700; font-family: 'Space Mono'; font-size: 0.9rem; cursor: pointer; margin-bottom: 10px; }
+        .btn-reset { width: 100%; background: transparent; color: #444; border: 1px solid #222; padding: 10px; border-radius: 10px; font-size: 0.6rem; font-family: 'Space Mono'; cursor: pointer; }
         .h-row { padding: 15px 10px; border-bottom: 1px solid #111; display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; }
         select { flex: 1; background: #111; color: var(--accent); border: 1px solid #222; padding: 12px; border-radius: 10px; font-family: 'Space Mono'; outline: none; text-align: center; }
-        .live-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     </style>
 </head>
 <body>
-
 <div class="container">
     <div class="header">
         <div class="logo">PACHECOIN</div>
-        <span id="timer">--:--:--</span>
+        <span id="timer">SYNCHRONISATION...</span>
     </div>
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('main', this)">ANALYSE</button>
-        <button class="tab-btn" onclick="switchTab('history', this)">HISTORIQUE</button>
+```
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('main', this)">ANALYSE</button>
+    <button class="tab-btn" onclick="switchTab('history', this)">HISTORIQUE</button>
+</div>
+
+<div id="main" class="page active">
+    <div class="card">
+        <div style="font-size:0.7rem; color:#aaa; margin-bottom:5px;">Performance <span id="txtAsset">--</span></div>
+        <div class="val" id="perfDisplay">CHARGEMENT...</div>
     </div>
 
-    <div id="main" class="page active">
-        <div class="card">
-            <div style="font-size:0.7rem; color:#aaa; margin-bottom:5px;">Performance <span id="txtAsset">BTC</span> / <span id="txtTF">H4</span></div>
-            <div class="val" id="perfDisplay">Chargement...</div>
-        </div>
-
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <select id="asset" onchange="initApp()">
-                <option value="BTCUSDT">BTC / USDT</option>
-                <option value="ETHUSDT">ETH / USDT</option>
-                <option value="SOLUSDT">SOL / USDT</option>
-                <option value="BNBUSDT">BNB / USDT</option>
-            </select>
-            <select id="tf" onchange="initApp()">
-                <option value="4h">H4</option>
-                <option value="1d">DAILY</option>
-            </select>
-        </div>
-
-        <div class="signal-box">
-            <div id="sig" style="color:#111">...</div>
-            <div id="price">$0.00</div>
-            <div id="lastPriceInfo">--</div>
-        </div>
-
-        <button class="btn-gen" onclick="runLogic()">ACTUALISER MAINTENANT</button>
-        <p style="text-align:center; font-size:0.6rem; color:#444; margin-top:10px;"><span class="live-dot"></span>MISE À JOUR LIVE</p>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <select id="asset" onchange="initApp()">
+            <option value="BTCUSDT">BTC / USDT</option>
+            <option value="ETHUSDT">ETH / USDT</option>
+            <option value="SOLUSDT">SOL / USDT</option>
+            <option value="BNBUSDT">BNB / USDT</option>
+        </select>
+        <select id="tf" onchange="initApp()">
+            <option value="4h">H4</option>
+            <option value="1d">DAILY</option>
+        </select>
     </div>
 
-    <div id="history" class="page">
-        <div class="card" style="padding:0; background:#080808;">
-            <div id="histTitle" style="padding:15px; font-size:0.7rem; color:var(--accent); font-weight:bold; border-bottom:1px solid #111">JOURNAL</div>
-            <div id="hList"></div>
-        </div>
+    <div class="signal-box">
+        <div id="sig" style="color:#333">WAIT...</div>
+        <div id="price">$ 0.00</div>
+        <div id="entryInfo">SIGNAL SUR CLÔTURE : --</div>
+        <div id="lastPriceInfo">SYNC...</div>
     </div>
+
+    <button class="btn-gen" onclick="runLogic()">ACTUALISER MAINTENANT</button>
+    <button class="btn-reset" onclick="hardReset()">&#9888;&#65039; RESET DES PRIX ERRONÉS</button>
+</div>
+
+<div id="history" class="page">
+    <div class="card" style="padding:0; background:#080808;">
+        <div style="padding:15px; font-size:0.7rem; color:var(--accent); font-weight:bold; border-bottom:1px solid #111;">JOURNAL DE TRADING</div>
+        <div id="hList"></div>
+    </div>
+</div>
+```
+
 </div>
 
 <script>
-    const currentMarketInitialData = {
-        "BTCUSDT_4h": { cap: 1045.20, lastEntry: 75120.00, trades: [{d:"30/04",t:"16:00",in:75120,out:76394,g:1.69}] },
-        "ETHUSDT_4h": { cap: 1032.15, lastEntry: 3820.00, trades: [{d:"30/04",t:"12:00",in:3820,out:3942,g:3.21}] },
-        "SOLUSDT_4h": { cap: 1064.40, lastEntry: 182.50, trades: [{d:"30/04",t:"08:00",in:182.5,out:194.2,g:6.41}] },
-        "BNBUSDT_4h": { cap: 1022.80, lastEntry: 592.00, trades: [{d:"30/04",t:"04:00",in:592,out:605.5,g:2.28}] }
-    };
+    const STORAGE_KEY = 'pache_v20';
 
-    let state = JSON.parse(localStorage.getItem('pache_v16_final')) || currentMarketInitialData;
+    // Couleurs JS — jamais de var(--x) dans style.color
+    const C_ACCENT = '#ff9500';
+    const C_GREEN  = '#00ff88';
+    const C_RED    = '#ff4466';
 
-    function fPrice(num) {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(num);
+    let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+
+    function fPrice(n) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency', currency: 'USD', minimumFractionDigits: 2
+        }).format(n);
+    }
+
+    function hardReset() {
+        if (confirm("Effacer tous les prix d'entrée et repartir de zéro ?")) {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
     }
 
     function switchTab(id, btn) {
@@ -105,93 +118,145 @@
 
     function initApp() {
         const asset = document.getElementById('asset').value;
-        const tf = document.getElementById('tf').value;
-        const key = `${asset}_${tf}`;
-        if (!state[key]) state[key] = { cap: 1000, trades: [], currentTrade: null, lastEntry: 0 };
-        document.getElementById('txtAsset').innerText = asset.replace('USDT','');
-        document.getElementById('txtTF').innerText = tf.toUpperCase();
+        const tf    = document.getElementById('tf').value;
+        const key   = asset + '_' + tf;
+        if (!state[key]) {
+            state[key] = { cap: 1000, trades: [], currentTrade: null, lastEntry: 0 };
+        }
+        document.getElementById('txtAsset').innerText = asset.replace('USDT', '');
         runLogic();
-    }
-
-    function updateTimer() {
-        const now = new Date();
-        const tf = document.getElementById('tf').value;
-        let target = new Date();
-        let hoursUTC = now.getUTCHours();
-        let interval = (tf === '4h') ? 4 : 24;
-        let nextCloture = Math.ceil((hoursUTC + 0.001) / interval) * interval;
-        target.setUTCHours(nextCloture, 0, 0, 0);
-        const diff = target - now;
-        const h = Math.floor(diff/3600000).toString().padStart(2,'0');
-        const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
-        const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
-        document.getElementById('timer').innerText = `CLÔTURE DANS : ${h}:${m}:${s}`;
     }
 
     async function runLogic() {
         const asset = document.getElementById('asset').value;
-        const tf = document.getElementById('tf').value;
-        const key = `${asset}_${tf}`;
-        
+        const tf    = document.getElementById('tf').value;
+        const key   = asset + '_' + tf;
+
         try {
-            const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${asset}&interval=${tf}&limit=50`);
+            const r = await fetch(
+                'https://api.binance.com/api/v3/klines?symbol=' + asset +
+                '&interval=' + tf + '&limit=51'
+            );
             const d = await r.json();
-            const currentPrice = parseFloat(d[d.length - 1][4]);
-            
-            const sma = d.slice(-20).reduce((a, b) => a + parseFloat(b[4]), 0) / 20;
-            const signal = currentPrice > sma ? "J'ACHETE" : "HORS MARCHÉ";
 
-            document.getElementById('sig').innerText = signal;
-            document.getElementById('sig').style.color = signal === "J'ACHETE" ? "var(--green)" : "var(--red)";
-            document.getElementById('price').innerText = fPrice(currentPrice);
+            // Prix live (bougie en cours) → affichage uniquement
+            const livePrice = parseFloat(d[d.length - 1][4]);
 
+            // Dernière bougie FERMÉE → signal + entrée
+            const closedPrice = parseFloat(d[d.length - 2][4]);
+
+            // SMA 20 sur les 20 bougies fermées avant la dernière
+            const closes20 = d.slice(-21, -1).map(function(c) { return parseFloat(c[4]); });
+            const sma20    = closes20.reduce(function(a, b) { return a + b; }, 0) / 20;
+
+            // Signal : basé sur bougie clôturée → zéro repaint
+            const signal = closedPrice > sma20 ? "J'ACHETE" : "HORS MARCHÉ";
+
+            // UI signal
+            document.getElementById('sig').innerText       = signal;
+            document.getElementById('sig').style.color     = signal === "J'ACHETE" ? C_GREEN : C_RED;
+            document.getElementById('price').innerText     = fPrice(livePrice);
+            document.getElementById('entryInfo').innerText = 'SIGNAL SUR CLÔTURE : ' + fPrice(closedPrice);
+
+            // Anti prix fantôme — currentTrade
+            if (state[key].currentTrade) {
+                const diff = Math.abs(state[key].currentTrade.in - livePrice) / livePrice;
+                if (diff > 0.5) { state[key].currentTrade = null; }
+            }
+            // Anti prix fantôme — lastEntry
+            if (state[key].lastEntry) {
+                const diffLast = Math.abs(state[key].lastEntry - livePrice) / livePrice;
+                if (diffLast > 0.5) { state[key].lastEntry = 0; }
+            }
+
+            // Entrée : prix de la bougie clôturée → reproductible, sans biais
             if (!state[key].currentTrade && signal === "J'ACHETE") {
-                state[key].currentTrade = { in: currentPrice, d: new Date().toLocaleDateString('fr-FR') };
-                state[key].lastEntry = currentPrice;
+                state[key].currentTrade = {
+                    in: closedPrice,
+                    d:  new Date().toLocaleDateString('fr-FR')
+                };
+                state[key].lastEntry = closedPrice;
+
             } else if (state[key].currentTrade && signal === "HORS MARCHÉ") {
-                const entry = state[key].currentTrade.in;
-                const gain = (((currentPrice - entry) / entry) * 100).toFixed(2);
+                var entry = state[key].currentTrade.in;
+                var gain  = parseFloat((((closedPrice - entry) / entry) * 100).toFixed(2));
                 state[key].trades.push({
-                    d: state[key].currentTrade.d,
-                    t: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
-                    in: entry, out: currentPrice, g: parseFloat(gain)
+                    d:   state[key].currentTrade.d,
+                    in:  entry,
+                    out: closedPrice,
+                    g:   gain
                 });
-                state[key].cap *= (1 + (gain/100));
+                state[key].cap *= (1 + gain / 100);
                 state[key].currentTrade = null;
             }
-            localStorage.setItem('pache_v16_final', JSON.stringify(state));
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
             updateUI();
-        } catch(e) { console.error("Erreur de synchronisation"); }
+
+        } catch(e) {
+            console.error('Erreur API Binance :', e);
+        }
     }
 
     function updateUI() {
-        const key = `${document.getElementById('asset').value}_${document.getElementById('tf').value}`;
-        const data = state[key];
-        const p = ((data.cap - 1000) / 1000 * 100).toFixed(2);
-        
-        document.getElementById('perfDisplay').innerText = `${fPrice(data.cap)} (${p >= 0 ? '+':''}${p}%)`;
-        document.getElementById('perfDisplay').style.color = p >= 0 ? 'var(--green)' : 'var(--red)';
-        
-        const lastE = data.currentTrade ? data.currentTrade.in : (data.lastEntry || 0);
-        document.getElementById('lastPriceInfo').innerText = data.currentTrade ? `PRIX D'ACHAT : ${fPrice(lastE)}` : `DERNIER PRIX D'ENTRÉE : ${fPrice(lastE)}`;
+        const asset = document.getElementById('asset').value;
+        const tf    = document.getElementById('tf').value;
+        const key   = asset + '_' + tf;
+        const data  = state[key];
+        if (!data) return;
 
-        const list = document.getElementById('hList');
+        // Performance
+        var p      = ((data.cap - 1000) / 1000 * 100).toFixed(2);
+        var perfEl = document.getElementById('perfDisplay');
+        perfEl.innerText   = fPrice(data.cap) + ' (' + (p >= 0 ? '+' : '') + p + '%)';
+        perfEl.style.color = p >= 0 ? C_GREEN : C_RED;
+
+        // Info prix d'entrée
+        var lastE   = data.currentTrade ? data.currentTrade.in : data.lastEntry;
+        var infoDiv = document.getElementById('lastPriceInfo');
+        if (lastE > 0) {
+            infoDiv.innerText   = data.currentTrade
+                ? "PRIX D'ACHAT : " + fPrice(lastE)
+                : "DERNIER PRIX D'ENTRÉE : " + fPrice(lastE);
+            infoDiv.style.color = '#666';
+        } else {
+            infoDiv.innerText   = "EN ATTENTE D'UN NOUVEAU SIGNAL";
+            infoDiv.style.color = C_ACCENT;
+        }
+
+        // Historique
+        var list = document.getElementById('hList');
+        if (data.trades.length === 0) {
+            list.innerHTML = '<div style="padding:20px; color:#444; text-align:center;">Aucun trade enregistré</div>';
+            return;
+        }
         list.innerHTML = '';
-        data.trades.slice().reverse().forEach(t => {
-            list.innerHTML += `
-                <div class="h-row">
-                    <div style="color:#aaa">${t.d}</div>
-                    <div style="text-align:left; flex:1; padding-left:15px;">
-                        ENTRÉE: ${t.in.toLocaleString('en-US')} | SORTIE: ${t.out.toLocaleString('en-US')}
-                    </div>
-                    <div style="font-weight:bold; color:${t.g >= 0 ? 'var(--green)' : 'var(--red)'}">${t.g > 0 ? '+':''}${t.g}%</div>
-                </div>`;
+        data.trades.slice().reverse().forEach(function(t) {
+            var row = document.createElement('div');
+            row.className = 'h-row';
+            row.innerHTML =
+                '<div style="color:#aaa">' + t.d + '</div>' +
+                '<div style="flex:1; padding-left:15px;">IN: ' + t.in.toFixed(2) + ' | OUT: ' + t.out.toFixed(2) + '</div>' +
+                '<div style="font-weight:bold; color:' + (t.g >= 0 ? C_GREEN : C_RED) + '">' + (t.g > 0 ? '+' : '') + t.g + '%</div>';
+            list.appendChild(row);
         });
     }
 
-    setInterval(updateTimer, 1000);
-    setInterval(runLogic, 30000);
+    // Timer clôture — calcul timestamp UTC, sans débordement
+    setInterval(function() {
+        var now       = Date.now();
+        var tf        = document.getElementById('tf').value;
+        var periodMs  = (tf === '4h' ? 4 : 24) * 3600 * 1000;
+        var nextClose = Math.ceil(now / periodMs) * periodMs;
+        var diff      = nextClose - now;
+        var h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+        var m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+        var s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+        document.getElementById('timer').innerText = 'CLÔTURE DANS : ' + h + ':' + m + ':' + s;
+    }, 1000);
+
     initApp();
 </script>
+
 </body>
 </html>
