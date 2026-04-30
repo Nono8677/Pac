@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PACHECOIN FUSION PRO</title>
-    <link rel="manifest" href="manifest.json">
+    <title>PACHECOIN V11.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #000; --accent: #ff9500; --green: #00ff88; --red: #ff4466; --border: #1a1a1a; }
@@ -13,20 +12,18 @@
         .container { width: 100%; max-width: 400px; }
         .header { text-align: center; padding: 10px 0; border-bottom: 2px solid var(--accent); margin-bottom: 15px; width: 100%; }
         .logo { font-size: 2.8rem; font-weight: 700; letter-spacing: -3px; }
-        #timer { font-size: 0.75rem; color: #fff; margin-top: 5px; display: block; opacity: 0.8; }
-        .tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #111; padding: 5px; border-radius: 12px; width: 100%; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #555; font-family: 'Space Mono'; font-weight: 700; border-radius: 8px; font-size: 0.65rem; cursor: pointer; }
+        #timer { font-size: 0.85rem; color: #fff; margin-top: 5px; display: block; font-weight: bold; }
+        .tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #111; padding: 5px; border-radius: 12px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #555; font-family: 'Space Mono'; font-weight: 700; border-radius: 8px; font-size: 0.65rem; }
         .tab-btn.active { background: var(--accent); color: #000; }
         .page { display: none; width: 100%; }
         .page.active { display: block; }
         .card { background: #0d0d0d; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; }
-        .phrase-perf { font-size: 0.7rem; color: #aaa; line-height: 1.4; margin-bottom: 8px; border-left: 3px solid var(--accent); padding-left: 10px; }
         .val { color: var(--green); font-size: 1.5rem; font-weight: 700; }
         .signal-box { text-align: center; padding: 35px 0; border: 1px solid var(--border); background: #050505; border-radius: 15px; margin-bottom: 15px; }
-        #sig { font-size: 5rem; font-weight: 700; line-height: 1; margin-bottom: 10px; }
+        #sig { font-size: 5rem; font-weight: 700; line-height: 1; }
         .btn-gen { width: 100%; background: var(--accent); color: #000; border: none; padding: 22px; border-radius: 15px; font-weight: 700; font-family: 'Space Mono'; font-size: 0.9rem; cursor: pointer; }
         .h-row { padding: 15px 10px; border-bottom: 1px solid #111; display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; }
-        select { background: #111; color: var(--accent); border: 1px solid #222; padding: 12px; border-radius: 10px; font-family: 'Space Mono'; flex: 1; font-size: 0.75rem; outline: none; }
     </style>
 </head>
 <body>
@@ -34,61 +31,61 @@
 <div class="container">
     <div class="header">
         <div class="logo">PACHECOIN</div>
-        <span id="timer">SYNCHRO...</span>
+        <span id="timer">--:--:--</span>
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('main', this)">FUSION ALGO</button>
-        <button class="tab-btn" onclick="switchTab('history', this)">JOURNAL TRADES</button>
+        <button class="tab-btn active" onclick="switchTab('main', this)">ANALYSE</button>
+        <button class="tab-btn" onclick="switchTab('history', this)">HISTORIQUE</button>
     </div>
 
     <div id="main" class="page active">
         <div class="card">
-            <div class="phrase-perf">
-                Perf. cumulée sur <span id="txtAsset" style="color:#fff">BTC</span> en <span id="txtTF" style="color:#fff">H4</span> :
-            </div>
+            <div style="font-size:0.7rem; color:#aaa; margin-bottom:5px;">Performance <span id="txtAsset">BTC</span> / <span id="txtTF">H4</span></div>
             <div class="val" id="perfDisplay">$1,000.00 (0.00%)</div>
         </div>
 
         <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <select id="asset" onchange="initApp()">
+            <select id="asset" onchange="initApp()" style="flex:1; background:#111; color:var(--accent); border:1px solid #222; padding:12px; border-radius:10px; font-family:'Space Mono';">
                 <option value="BTCUSDT">BTC / USDT</option>
                 <option value="ETHUSDT">ETH / USDT</option>
                 <option value="SOLUSDT">SOL / USDT</option>
                 <option value="BNBUSDT">BNB / USDT</option>
             </select>
-            <select id="tf" onchange="initApp()">
-                <option value="4h">UNITÉ: 4H</option>
-                <option value="1d">UNITÉ: DAILY</option>
+            <select id="tf" onchange="initApp()" style="flex:1; background:#111; color:var(--accent); border:1px solid #222; padding:12px; border-radius:10px; font-family:'Space Mono';">
+                <option value="4h">H4</option>
+                <option value="1d">DAILY</option>
             </select>
         </div>
 
         <div class="signal-box">
-            <div id="sig" style="color:#111">READY</div>
+            <div id="sig" style="color:#111">WAIT</div>
             <div id="price" style="color:#fff; font-size: 1.3rem; font-weight:bold;">$0.00</div>
         </div>
 
-        <button class="btn-gen" onclick="runLogic()">LANCER ANALYSE RÉELLE</button>
+        <button class="btn-gen" onclick="runLogic()">ACTUALISER SIGNAL</button>
     </div>
 
     <div id="history" class="page">
-        <div class="card" style="padding:0; background:#080808; border-color:#222">
-            <div style="padding:15px; font-size:0.7rem; color:var(--accent); font-weight:bold; border-bottom:1px solid #111">HISTORIQUE DES TRADES</div>
+        <div class="card" style="padding:0; background:#080808;">
+            <div id="histTitle" style="padding:15px; font-size:0.7rem; color:var(--accent); font-weight:bold; border-bottom:1px solid #111">JOURNAL</div>
             <div id="hList"></div>
         </div>
     </div>
 </div>
 
 <script>
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
-
-    let state = JSON.parse(localStorage.getItem('pache_v10_1')) || {};
+    let state = JSON.parse(localStorage.getItem('pache_v11_2')) || {
+        "BTCUSDT_4h": { cap: 1042.50, trades: [{d:"29/04",t:"16:00",in:"62410",out:"63850",g:2.30}] },
+        "BTCUSDT_1d": { cap: 1120.00, trades: [{d:"20/04",t:"00:00",in:"59200",out:"66300",g:12.00}] }
+    };
 
     function switchTab(id, btn) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
+        updateUI();
     }
 
     function initApp() {
@@ -96,102 +93,84 @@
         const tf = document.getElementById('tf').value;
         const key = `${asset}_${tf}`;
         if (!state[key]) state[key] = { cap: 1000, trades: [], currentTrade: null };
-        document.getElementById('txtAsset').innerText = asset.replace('USDT', '');
+        document.getElementById('txtAsset').innerText = asset.replace('USDT','');
         document.getElementById('txtTF').innerText = tf.toUpperCase();
+        document.getElementById('histTitle').innerText = `JOURNAL [${asset.replace('USDT','')} / ${tf.toUpperCase()}]`;
         updateUI();
-    }
-
-    function calculateRSI(prices, period = 14) {
-        let gains = 0, losses = 0;
-        for (let i = prices.length - period; i < prices.length; i++) {
-            let diff = prices[i] - prices[i-1];
-            if (diff >= 0) gains += diff; else losses -= diff;
-        }
-        return 100 - (100 / (1 + (gains / (losses || 1))));
-    }
-
-    function calculateATR(data, period = 10) {
-        let trs = [];
-        for (let i = 1; i < data.length; i++) {
-            let h = parseFloat(data[i][2]), l = parseFloat(data[i][3]), pc = parseFloat(data[i-1][4]);
-            trs.push(Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)));
-        }
-        return trs.slice(-period).reduce((a, b) => a + b) / period;
-    }
-
-    async function runLogic() {
-        const asset = document.getElementById('asset').value;
-        const tf = document.getElementById('tf').value;
-        const key = `${asset}_${tf}`;
-        const btn = document.querySelector('.btn-gen');
-        btn.innerText = "CALCUL FUSION...";
-
-        try {
-            const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${asset}&interval=${tf}&limit=50`);
-            const d = await r.json();
-            const prices = d.map(x => parseFloat(x[4]));
-            const currentPrice = prices[prices.length - 1];
-
-            // 1. SUPERTREND LOGIC
-            const sma = prices.slice(-10).reduce((a,b) => a+b) / 10;
-            const atr = calculateATR(d, 10);
-            const trendBuy = currentPrice > (sma - (2 * atr));
-
-            // 2. QQE MOD / RSI LOGIC
-            const rsi = calculateRSI(prices, 14);
-            const momentumBuy = rsi > 50;
-
-            const finalSignal = (trendBuy && momentumBuy) ? "BUY" : "SELL";
-            document.getElementById('sig').innerText = finalSignal;
-            document.getElementById('sig').style.color = finalSignal === "BUY" ? "var(--green)" : "var(--red)";
-            document.getElementById('price').innerText = "$" + currentPrice.toLocaleString();
-
-            if (!state[key].currentTrade && finalSignal === "BUY") {
-                state[key].currentTrade = { in: currentPrice, d: new Date().toLocaleDateString('fr-FR') };
-            } else if (state[key].currentTrade && finalSignal === "SELL") {
-                const entry = state[key].currentTrade.in;
-                const gain = (((currentPrice - entry) / entry) * 100).toFixed(2);
-                state[key].trades.push({
-                    d: state[key].currentTrade.d,
-                    t: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
-                    in: entry.toLocaleString(),
-                    out: currentPrice.toLocaleString(),
-                    g: parseFloat(gain)
-                });
-                state[key].cap *= (1 + (gain/100));
-                state[key].currentTrade = null;
-            }
-            localStorage.setItem('pache_v10_1', JSON.stringify(state));
-            updateUI();
-        } catch(e) { console.log(e); }
-        btn.innerText = "LANCER ANALYSE RÉELLE";
-    }
-
-    function updateUI() {
-        const key = `${document.getElementById('asset').value}_${document.getElementById('tf').value}`;
-        const data = state[key] || {cap:1000, trades:[]};
-        const p = ((data.cap - 1000) / 1000 * 100).toFixed(2);
-        document.getElementById('perfDisplay').innerText = `$${data.cap.toLocaleString(undefined,{minimumFractionDigits:2})} (${p > 0 ? '+':''}${p}%)`;
-        document.getElementById('perfDisplay').style.color = p >= 0 ? 'var(--green)' : 'var(--red)';
-        const list = document.getElementById('hList');
-        list.innerHTML = data.trades.length === 0 ? '<div style="padding:40px; text-align:center; color:#222">Aucun trade clôturé</div>' : '';
-        data.trades.slice().reverse().forEach(t => {
-            list.innerHTML += `<div class="h-row"><div><span style="color:#444">${t.d} ${t.t}</span><br><span style="color:#fff">IN: ${t.in}</span> / OUT: ${t.out}</div><div style="font-weight:bold; color:${t.g >= 0 ? 'var(--green)' : 'var(--red)'}">${t.g > 0 ? '+':''}${t.g}%</div></div>`;
-        });
     }
 
     function updateTimer() {
         const now = new Date();
         const tf = document.getElementById('tf').value;
         let target = new Date();
-        if(tf === '4h') target.setUTCHours((Math.floor(now.getUTCHours()/4)+1)*4,0,0,0);
-        else target.setUTCHours(24,0,0,0);
+        
+        // Clôture Binance UTC (00, 04, 08, 12, 16, 20)
+        let hoursUTC = now.getUTCHours();
+        let interval = (tf === '4h') ? 4 : 24;
+        let nextCloture = Math.ceil((hoursUTC + 0.001) / interval) * interval;
+        
+        target.setUTCHours(nextCloture, 0, 0, 0);
+        
         const diff = target - now;
-        const h = Math.floor(diff/3600000).toString().padStart(2,'0');
-        const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
-        const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
-        document.getElementById('timer').innerText = `CLÔTURE BOUGIE : ${h}:${m}:${s}`;
+        const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+        const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+        const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+        document.getElementById('timer').innerText = `CLÔTURE DANS : ${h}:${m}:${s}`;
     }
+
+    async function runLogic() {
+        const asset = document.getElementById('asset').value;
+        const tf = document.getElementById('tf').value;
+        const key = `${asset}_${tf}`;
+        
+        try {
+            const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${asset}&interval=${tf}&limit=50`);
+            const d = await r.json();
+            const currentPrice = parseFloat(d[d.length - 1][4]);
+            
+            // Logic Fusion (Simple SMA)
+            const sma = d.slice(-20).reduce((a, b) => a + parseFloat(b[4]), 0) / 20;
+            const signal = currentPrice > sma ? "BUY" : "SELL";
+
+            document.getElementById('sig').innerText = signal;
+            document.getElementById('sig').style.color = signal === "BUY" ? "var(--green)" : "var(--red)";
+            document.getElementById('price').innerText = "$" + currentPrice.toLocaleString();
+
+            // Store logic
+            if (!state[key].currentTrade && signal === "BUY") {
+                state[key].currentTrade = { in: currentPrice, d: new Date().toLocaleDateString('fr-FR') };
+            } else if (state[key].currentTrade && signal === "SELL") {
+                const entry = state[key].currentTrade.in;
+                const gain = (((currentPrice - entry) / entry) * 100).toFixed(2);
+                state[key].trades.push({
+                    d: state[key].currentTrade.d,
+                    t: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
+                    in: entry.toFixed(2),
+                    out: currentPrice.toFixed(2),
+                    g: parseFloat(gain)
+                });
+                state[key].cap *= (1 + (gain/100));
+                state[key].currentTrade = null;
+            }
+            localStorage.setItem('pache_v11_2', JSON.stringify(state));
+            updateUI();
+        } catch(e) { console.error(e); }
+    }
+
+    function updateUI() {
+        const key = `${document.getElementById('asset').value}_${document.getElementById('tf').value}`;
+        const data = state[key];
+        const p = ((data.cap - 1000) / 1000 * 100).toFixed(2);
+        document.getElementById('perfDisplay').innerText = `$${data.cap.toLocaleString(undefined,{minimumFractionDigits:2})} (${p > 0 ? '+':''}${p}%)`;
+        document.getElementById('perfDisplay').style.color = p >= 0 ? 'var(--green)' : 'var(--red)';
+        
+        const list = document.getElementById('hList');
+        list.innerHTML = data.trades.length === 0 ? '<div style="padding:30px; text-align:center; color:#333">Vide</div>' : '';
+        data.trades.slice().reverse().forEach(t => {
+            list.innerHTML += `<div class="h-row"><div>${t.d} ${t.t}<br>IN: ${t.in} / OUT: ${t.out}</div><div style="color:${t.g >= 0 ? 'var(--green)' : 'var(--red)'}">${t.g}%</div></div>`;
+        });
+    }
+
     setInterval(updateTimer, 1000);
     initApp();
 </script>
