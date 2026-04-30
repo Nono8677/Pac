@@ -1,19 +1,8 @@
-const CACHE_NAME = 'pachecoin-v10-1';
-
-self.addEventListener('install', (e) => {
-    self.skipWaiting();
-});
-
+const CACHE_NAME = 'pachecoin-v11-2';
+self.addEventListener('install', (e) => self.skipWaiting());
 self.addEventListener('activate', (e) => {
-    e.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(keys.map((k) => {
-                if (k !== CACHE_NAME) return caches.delete(k);
-            }));
-        })
-    );
+    e.waitUntil(caches.keys().then((keys) => {
+        return Promise.all(keys.map((k) => { if (k !== CACHE_NAME) return caches.delete(k); }));
+    }));
 });
-
-self.addEventListener('fetch', (e) => {
-    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-});
+self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
