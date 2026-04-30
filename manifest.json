@@ -1,14 +1,13 @@
 {
-  "name": "Pachecoin CryptoSignal Pro",
+  "name": "Pachecoin Pro",
   "short_name": "Pachecoin",
-  "description": "Signaux de trading crypto basés sur la stratégie Fusion.",
-  "start_url": "./index.html",
+  "start_url": "index.html?v=6",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#ff9500",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2585/2585274.png",
+      "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
