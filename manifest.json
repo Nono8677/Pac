@@ -1,15 +1,9 @@
 {
-  "name": "Pachecoin Fusion",
+  "name": "Pachecoin v11.2",
   "short_name": "Pachecoin",
-  "start_url": "index.html?v=10.1",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#ff9500",
-  "icons": [
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "icons": [{ "src": "icon.png", "sizes": "512x512", "type": "image/png" }]
 }
