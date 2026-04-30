@@ -9,7 +9,7 @@
     <style>
         :root {
             --bg: #000000;
-            --card-bg: #0a0a0a;
+            --card-bg: #0d0d0d;
             --accent-orange: #ff9500;
             --accent-red: #ff4466;
             --accent-green: #00ff88;
@@ -23,78 +23,109 @@
         body { background-color: var(--bg); color: var(--text-main); font-family: 'Inter', sans-serif; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .container { width: 100%; max-width: 420px; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; padding: 10px 5px; border-bottom: 1px solid var(--border); }
-        .pachecoin { color: var(--accent-orange); font-weight: 700; font-family: 'Space Mono'; font-size: 0.8rem; letter-spacing: 1px; }
-        
-        .timer-box { font-size: 0.7rem; color: var(--text-white); background: #111; padding: 4px 10px; border-radius: 4px; font-family: 'Space Mono'; border: 1px solid var(--border); }
+        /* Header mis à jour avec PACHECOIN plus grand et Timer visible */
+        .header { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 5px; margin-bottom: 5px; padding: 15px 5px; border-bottom: 1px solid var(--border); }
+        .app-name { font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
+        .pachecoin { grid-column: 1 / -1; color: var(--accent-orange); font-weight: 700; font-family: 'Space Mono'; font-size: 1.6rem; letter-spacing: -1px; margin-top: -5px; }
+        .live-status { font-size: 0.5rem; color: var(--accent-green); white-space: nowrap; }
 
-        .wallet-card { 
-            background: #0d0d0d; border: 1px solid var(--border); border-left: 4px solid var(--accent-orange);
-            border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; 
-        }
-        .wallet-val { color: var(--text-white); font-family: 'Space Mono'; font-size: 1rem; font-weight: 700; }
+        .timeframe-info { font-size: 0.65rem; color: var(--text-dim); text-align: center; margin-bottom: 15px; font-style: italic; }
 
-        .main-card { 
-            background: var(--card-bg); border-radius: 24px; padding: 30px 20px; text-align: center; border: 1px solid var(--border); margin-bottom: 15px; 
-        }
+        .performance-card { background: #0d0d0d; border: 1px solid var(--border); border-left: 4px solid var(--accent-orange); border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .perf-label { font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+        .perf-val { color: var(--text-white); font-family: 'Space Mono'; font-size: 1rem; font-weight: 700; }
+
+        .selectors { display: flex; gap: 8px; margin-bottom: 15px; }
+        select { flex: 1; background: var(--card-bg); color: var(--accent-orange); border: 1px solid var(--border); padding: 12px; border-radius: 10px; font-family: 'Space Mono'; font-size: 0.75rem; outline: none; }
+
+        .signal-card { background: var(--card-bg); border-radius: 24px; padding: 30px 20px; text-align: center; border: 1px solid var(--border); margin-bottom: 15px; }
         #mainSignal { font-family: 'Space Mono'; font-size: 5rem; font-weight: 700; line-height: 1; margin-bottom: 10px; }
-        
-        .history-section { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); padding: 15px; margin-top: 15px; }
-        .history-title { font-size: 0.7rem; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; color: var(--text-dim); display: flex; justify-content: space-between; }
-        .trade-row { font-size: 0.65rem; border-bottom: 1px solid #111; padding: 8px 0; display: grid; grid-template-columns: 1fr 1fr 1fr; color: #ccc; }
-        .trade-header { color: var(--text-dim); font-weight: 700; border-bottom: 1px solid var(--border); }
+        .price-display { font-family: 'Space Mono'; font-size: 1.6rem; color: var(--text-white); margin-bottom: 20px; }
+
+        .order-box { background: rgba(255,149,0,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+        .order-label { font-size: 0.7rem; color: var(--accent-orange); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; }
+        .order-price { color: var(--text-white); font-family: 'Space Mono'; font-size: 1.3rem; font-weight: 700; }
 
         .btn-analyze { width: 100%; background: var(--accent-orange); color: #000; border: none; padding: 20px; border-radius: 14px; font-weight: 700; font-family: 'Space Mono'; font-size: 1rem; cursor: pointer; }
+
+        /* Section Historique et Timer visible */
+        .footer-section { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); padding: 15px; margin-top: 15px; width: 100%; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; color: var(--text-dim); }
+        .timer-val { font-family: 'Space Mono'; color: var(--accent-orange); font-size: 0.8rem; }
+
+        .history-table { font-size: 0.65rem; color: #ccc; }
+        .history-row { display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 8px 0; border-bottom: 1px solid #111; }
+        .history-head { font-weight: 700; color: var(--text-dim); border-bottom: 1px solid var(--border); }
+
+        .disclaimer { margin-top: 30px; padding: 20px; font-size: 0.65rem; color: var(--text-dim); text-align: center; border-top: 1px solid var(--border); width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <div class="pachecoin">PACHECOIN PRO</div>
-        <div class="timer-box" id="candleTimer">NEXT: 00:00:00</div>
+        <div class="app-name">CRYPTO/SIGNAL PRO</div>
+        <div class="live-status">● LIVE DATA</div>
+        <div class="pachecoin">PACHECOIN</div>
     </div>
 
-    <div class="wallet-card">
+    <div class="timeframe-info">H4 : Swing Trading | 1D : Tendance Fond</div>
+
+    <div class="performance-card">
         <div>
-            <div style="font-size:0.55rem; color:var(--text-dim)">PF PERFORMANCE (1000$) - <span id="walletAsset">BTC</span></div>
-            <div class="wallet-val" id="walletReturn">$1,000.00 (0.00%)</div>
+            <div class="perf-label">PERFORMANCE PF (1000$) DEPUIS LE 29/04/26 - BTC</div>
+            <div class="perf-val">$1,000.00 (0.00%)</div>
         </div>
         <button onclick="resetAll()" style="background:none; border:1px solid #333; color:#555; font-size:0.5rem; padding:6px; border-radius:6px;">RESET</button>
     </div>
 
-    <div style="display:flex; gap:8px; margin-bottom:15px;">
-        <select id="assetSelect" style="flex:1; background:#0d0d0d; color:var(--accent-orange); border:1px solid var(--border); padding:12px; border-radius:10px;" onchange="updateDisplay()">
+    <div class="selectors">
+        <select id="assetSelect" onchange="updateDisplay()">
             <option value="BTCUSDT">BTC / USDT</option>
             <option value="ETHUSDT">ETH / USDT</option>
+            <option value="BNBUSDT">BNB / USDT</option>
             <option value="SOLUSDT">SOL / USDT</option>
         </select>
-        <select id="tfSelect" style="flex:1; background:#0d0d0d; color:var(--accent-orange); border:1px solid var(--border); padding:12px; border-radius:10px;" onchange="updateDisplay()">
+        <select id="tfSelect" onchange="updateDisplay()">
             <option value="4h">TIMEFRAME: 4H</option>
-            <option value="1d">TIMEFRAME: 1D</option>
+            <option value="1d">TIMEFRAME: DAILY</option>
         </select>
     </div>
 
-    <div class="main-card">
+    <div class="signal-card">
         <div id="mainSignal" style="color:var(--text-dim)">---</div>
-        <div id="priceBig" style="font-family:'Space Mono'; font-size:1.6rem; color:#fff; margin-bottom:20px;">$0.00</div>
-        <div style="background:rgba(255,149,0,0.03); border:1px solid var(--border); border-radius:12px; padding:15px;">
-            <div id="entryLabel" style="font-size:0.6rem; color:var(--accent-orange); margin-bottom:5px;">PRIX D'ENTRÉE CONSEILLÉ</div>
-            <div id="valEntry" style="color:#fff; font-family:'Space Mono'; font-size:1.2rem; font-weight:700;">---</div>
+        <div class="price-display">$0.00</div>
+        <div class="order-box">
+            <div class="order-label">LIMIT BUY ORDER</div>
+            <div class="order-price">$0.00</div>
         </div>
     </div>
 
     <button class="btn-analyze" id="btnAnalyze" onclick="runAnalysis()">GÉNÉRER SIGNAL FUSIONNÉ</button>
 
-    <div class="history-section">
-        <div class="history-title"><span>HISTORIQUE DES TRADES</span> <span id="tradeCount" style="color:var(--accent-orange)">0 TRADES</span></div>
-        <div class="trade-row trade-header">
-            <div>DATE/HEURE</div>
-            <div>ENTRY/EXIT</div>
-            <div style="text-align:right">PROFIT</div>
+    <div class="footer-section">
+        <div class="section-header">
+            <div>CLÔTURE BOUGIE</div>
+            <div class="timer-val" id="candleTimer">00:00:00</div>
         </div>
-        <div id="tradeHistory">
+        <div class="section-header" style="margin-top: 15px;">
+            <div>HISTORIQUE DES TRADES</div>
+            <div id="tradeCount" style="color:var(--accent-orange)">0 TRADES</div>
+        </div>
+        <div class="history-table">
+            <div class="history-row history-head">
+                <div>DATE/HEURE</div>
+                <div>ENTRY/EXIT</div>
+                <div style="text-align:right">PROFIT</div>
             </div>
+            <div id="tradeHistory">
+                </div>
+        </div>
+    </div>
+
+    <div class="disclaimer">
+        <b style="color:var(--accent-orange); display:block; margin-bottom:8px">CECI N’EST PAS UN CONSEIL EN INVESTISSEMENT</b>
+        Ce contenu est fourni à titre informatif uniquement et ne constitue pas un conseil financier.
     </div>
 </div>
 
@@ -121,16 +152,17 @@
         const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
         const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
         const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-        document.getElementById('candleTimer').innerText = `CLÔTURE: ${h}:${m}:${s}`;
+        document.getElementById('candleTimer').innerText = `${h}:${m}:${s}`;
     }
     setInterval(updateTimer, 1000);
 
     function updateDisplay() {
         const p = appData.portfolio;
         const percent = ((p.capital - 1000) / 1000 * 100).toFixed(2);
-        document.getElementById('walletReturn').innerText = `$${p.capital.toLocaleString('en-US', {minimumFractionDigits: 2})} (${percent > 0 ? '+':''}${percent}%)`;
-        document.getElementById('walletReturn').style.color = percent >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+        document.querySelector('.perf-val').innerText = `$${p.capital.toLocaleString('en-US', {minimumFractionDigits: 2})} (${percent > 0 ? '+':''}${percent}%)`;
+        document.querySelector('.perf-val').style.color = percent >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
         renderHistory();
+        updateTimer();
     }
 
     function renderHistory() {
@@ -140,10 +172,10 @@
         
         [...appData.history].reverse().forEach(t => {
             const row = document.createElement('div');
-            row.className = 'trade-row';
+            row.className = 'history-row';
             row.innerHTML = `
                 <div>${t.date}<br><small>${t.time}</small></div>
-                <div>In: ${t.in.toFixed(1)}<br>Out: ${t.out.toFixed(1)}</div>
+                <div>${t.type === 'IN' ? 'In' : 'Out'}: ${t.price.toFixed(1)}</div>
                 <div style="text-align:right; color:${t.p >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">${t.p > 0 ? '+':''}${t.p.toFixed(2)}%</div>
             `;
             container.appendChild(row);
@@ -154,21 +186,21 @@
         const symbol = document.getElementById('assetSelect').value;
         const tf = document.getElementById('tfSelect').value;
         const btn = document.getElementById('btnAnalyze');
-        btn.disabled = true; btn.innerText = "CALCUL EN COURS...";
+        btn.disabled = true; btn.innerText = "SYNCHRONISATION...";
 
         try {
             const resp = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${tf}&limit=50`);
             const data = await resp.json();
             const currentPrice = parseFloat(data[data.length-1][4]);
             
-            // Logique simplifiée du signal pour démo (Score Fusion)
+            // Logique simplifiée du signal pour démo
             const signal = Math.random() > 0.5 ? "BUY" : "SELL";
             
-            document.getElementById('priceBig').innerText = `$${currentPrice.toLocaleString()}`;
+            document.querySelector('.price-display').innerText = `$${currentPrice.toLocaleString()}`;
             const sigEl = document.getElementById('mainSignal');
             sigEl.innerText = signal;
             sigEl.style.color = signal === "BUY" ? "var(--accent-green)" : "var(--accent-red)";
-            document.getElementById('valEntry').innerText = `$${(currentPrice * 0.998).toLocaleString()}`;
+            document.querySelector('.order-price').innerText = `$${(currentPrice * 0.998).toLocaleString()}`;
 
             // Enregistrement historique si le signal change
             if(appData.portfolio.lastSignal && appData.portfolio.lastSignal !== signal) {
@@ -177,9 +209,9 @@
                 appData.history.push({
                     date: now.toLocaleDateString(),
                     time: now.toLocaleTimeString(),
-                    in: appData.portfolio.lastPrice,
-                    out: currentPrice,
-                    p: signal === "SELL" ? profit : -profit // Simplifié
+                    type: signal === 'SELL' ? 'IN' : 'OUT',
+                    price: currentPrice,
+                    p: profit
                 });
                 appData.portfolio.capital *= (1 + (profit/100));
             }
