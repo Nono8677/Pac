@@ -3,237 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pachecoin - CryptoSignal Pro</title>
+    <title>Pachecoin Pro</title>
     <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #000000;
-            --card-bg: #0d0d0d;
-            --accent-orange: #ff9500;
-            --accent-red: #ff4466;
-            --accent-green: #00ff88;
-            --text-main: #ff9500;
-            --text-white: #ffffff;
-            --text-dim: #444444;
+            --accent: #ff9500;
+            --green: #00ff88;
+            --red: #ff4466;
+            --card: #0d0d0d;
             --border: #1a1a1a;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--bg); color: var(--text-main); font-family: 'Inter', sans-serif; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 420px; }
+        body { 
+            background: var(--bg); 
+            color: var(--accent); 
+            font-family: 'Inter', sans-serif; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        .container { width: 100%; max-width: 400px; }
 
-        /* Header mis à jour avec PACHECOIN plus grand et Timer visible */
-        .header { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 5px; margin-bottom: 5px; padding: 15px 5px; border-bottom: 1px solid var(--border); }
-        .app-name { font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
-        .pachecoin { grid-column: 1 / -1; color: var(--accent-orange); font-weight: 700; font-family: 'Space Mono'; font-size: 1.6rem; letter-spacing: -1px; margin-top: -5px; }
-        .live-status { font-size: 0.5rem; color: var(--accent-green); white-space: nowrap; }
+        /* HEADER AVEC PACHECOIN XXL */
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        .pachecoin-logo { 
+            font-family: 'Space Mono', monospace; 
+            font-size: 2.8rem; /* TAILLE MAXIMUM */
+            font-weight: 700; 
+            letter-spacing: -2px; 
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        .timer-display { 
+            display: inline-block;
+            background: #111; 
+            color: var(--green); 
+            font-family: 'Space Mono'; 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            font-size: 0.9rem;
+            border: 1px solid #222;
+        }
 
-        .timeframe-info { font-size: 0.65rem; color: var(--text-dim); text-align: center; margin-bottom: 15px; font-style: italic; }
+        /* PERF CARD */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; }
+        .label { font-size: 0.6rem; color: #555; text-transform: uppercase; margin-bottom: 5px; }
+        .val { color: #fff; font-family: 'Space Mono'; font-size: 1.2rem; font-weight: 700; }
 
-        .performance-card { background: #0d0d0d; border: 1px solid var(--border); border-left: 4px solid var(--accent-orange); border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .perf-label { font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
-        .perf-val { color: var(--text-white); font-family: 'Space Mono'; font-size: 1rem; font-weight: 700; }
+        /* MAIN SIGNAL */
+        .signal-box { text-align: center; padding: 30px 10px; }
+        #sigText { font-family: 'Space Mono'; font-size: 5.5rem; font-weight: 700; line-height: 1; }
+        .price { color: #fff; font-size: 1.8rem; font-family: 'Space Mono'; margin: 15px 0; }
 
-        .selectors { display: flex; gap: 8px; margin-bottom: 15px; }
-        select { flex: 1; background: var(--card-bg); color: var(--accent-orange); border: 1px solid var(--border); padding: 12px; border-radius: 10px; font-family: 'Space Mono'; font-size: 0.75rem; outline: none; }
+        /* BUTTON */
+        .btn { 
+            width: 100%; 
+            background: var(--accent); 
+            color: #000; 
+            border: none; 
+            padding: 22px; 
+            border-radius: 15px; 
+            font-weight: 700; 
+            font-family: 'Space Mono'; 
+            font-size: 1.1rem; 
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 149, 0, 0.2);
+        }
 
-        .signal-card { background: var(--card-bg); border-radius: 24px; padding: 30px 20px; text-align: center; border: 1px solid var(--border); margin-bottom: 15px; }
-        #mainSignal { font-family: 'Space Mono'; font-size: 5rem; font-weight: 700; line-height: 1; margin-bottom: 10px; }
-        .price-display { font-family: 'Space Mono'; font-size: 1.6rem; color: var(--text-white); margin-bottom: 20px; }
-
-        .order-box { background: rgba(255,149,0,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
-        .order-label { font-size: 0.7rem; color: var(--accent-orange); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; }
-        .order-price { color: var(--text-white); font-family: 'Space Mono'; font-size: 1.3rem; font-weight: 700; }
-
-        .btn-analyze { width: 100%; background: var(--accent-orange); color: #000; border: none; padding: 20px; border-radius: 14px; font-weight: 700; font-family: 'Space Mono'; font-size: 1rem; cursor: pointer; }
-
-        /* Section Historique et Timer visible */
-        .footer-section { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); padding: 15px; margin-top: 15px; width: 100%; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; color: var(--text-dim); }
-        .timer-val { font-family: 'Space Mono'; color: var(--accent-orange); font-size: 0.8rem; }
-
-        .history-table { font-size: 0.65rem; color: #ccc; }
-        .history-row { display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 8px 0; border-bottom: 1px solid #111; }
-        .history-head { font-weight: 700; color: var(--text-dim); border-bottom: 1px solid var(--border); }
-
-        .disclaimer { margin-top: 30px; padding: 20px; font-size: 0.65rem; color: var(--text-dim); text-align: center; border-top: 1px solid var(--border); width: 100%; }
+        /* HISTORIQUE */
+        .history { margin-top: 25px; width: 100%; }
+        .history-title { font-size: 0.75rem; font-weight: 700; margin-bottom: 15px; color: #444; display: flex; justify-content: space-between; }
+        .h-row { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            padding: 12px 0; 
+            border-bottom: 1px solid #111; 
+            font-size: 0.7rem; 
+            color: #bbb;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <div class="app-name">CRYPTO/SIGNAL PRO</div>
-        <div class="live-status">● LIVE DATA</div>
-        <div class="pachecoin">PACHECOIN</div>
+        <div class="pachecoin-logo">PACHECOIN</div>
+        <div class="timer-display" id="timer">CLÔTURE: 00:00:00</div>
     </div>
 
-    <div class="timeframe-info">H4 : Swing Trading | 1D : Tendance Fond</div>
-
-    <div class="performance-card">
-        <div>
-            <div class="perf-label">PERFORMANCE PF (1000$) DEPUIS LE 29/04/26 - BTC</div>
-            <div class="perf-val">$1,000.00 (0.00%)</div>
-        </div>
-        <button onclick="resetAll()" style="background:none; border:1px solid #333; color:#555; font-size:0.5rem; padding:6px; border-radius:6px;">RESET</button>
+    <div class="card">
+        <div class="label">PERFORMANCE PORTFOLIO (1000$)</div>
+        <div class="val" id="perfDisplay">$1,000.00 (0.00%)</div>
     </div>
 
-    <div class="selectors">
-        <select id="assetSelect" onchange="updateDisplay()">
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <select id="asset" style="flex:1; background:#111; color:var(--accent); border:1px solid #222; padding:12px; border-radius:10px; font-family:'Space Mono';">
             <option value="BTCUSDT">BTC / USDT</option>
             <option value="ETHUSDT">ETH / USDT</option>
-            <option value="BNBUSDT">BNB / USDT</option>
             <option value="SOLUSDT">SOL / USDT</option>
         </select>
-        <select id="tfSelect" onchange="updateDisplay()">
-            <option value="4h">TIMEFRAME: 4H</option>
-            <option value="1d">TIMEFRAME: DAILY</option>
+        <select id="tf" onchange="updateTimer()" style="flex:1; background:#111; color:var(--accent); border:1px solid #222; padding:12px; border-radius:10px; font-family:'Space Mono';">
+            <option value="4h">4H SWING</option>
+            <option value="1d">1D TENDANCE</option>
         </select>
     </div>
 
-    <div class="signal-card">
-        <div id="mainSignal" style="color:var(--text-dim)">---</div>
-        <div class="price-display">$0.00</div>
-        <div class="order-box">
-            <div class="order-label">LIMIT BUY ORDER</div>
-            <div class="order-price">$0.00</div>
+    <div class="card signal-box">
+        <div id="sigText" style="color:#222">---</div>
+        <div class="price" id="curPrice">$0.00</div>
+        <div style="background:rgba(255,149,0,0.05); padding:10px; border-radius:8px; font-size:0.8rem;">
+            ENTRY: <span id="entryPrice" style="color:#fff">---</span>
         </div>
     </div>
 
-    <button class="btn-analyze" id="btnAnalyze" onclick="runAnalysis()">GÉNÉRER SIGNAL FUSIONNÉ</button>
+    <button class="btn" onclick="getSignal()">GÉNÉRER SIGNAL FUSIONNÉ</button>
 
-    <div class="footer-section">
-        <div class="section-header">
-            <div>CLÔTURE BOUGIE</div>
-            <div class="timer-val" id="candleTimer">00:00:00</div>
+    <div class="history">
+        <div class="history-title"><span>HISTORIQUE DES TRADES</span> <span id="count">0</span></div>
+        <div class="h-row" style="color:#444; font-weight:bold; border-bottom:1px solid #222">
+            <div>DATE</div>
+            <div>ACTION</div>
+            <div style="text-align:right">PROFIT</div>
         </div>
-        <div class="section-header" style="margin-top: 15px;">
-            <div>HISTORIQUE DES TRADES</div>
-            <div id="tradeCount" style="color:var(--accent-orange)">0 TRADES</div>
-        </div>
-        <div class="history-table">
-            <div class="history-row history-head">
-                <div>DATE/HEURE</div>
-                <div>ENTRY/EXIT</div>
-                <div style="text-align:right">PROFIT</div>
-            </div>
-            <div id="tradeHistory">
-                </div>
-        </div>
-    </div>
-
-    <div class="disclaimer">
-        <b style="color:var(--accent-orange); display:block; margin-bottom:8px">CECI N’EST PAS UN CONSEIL EN INVESTISSEMENT</b>
-        Ce contenu est fourni à titre informatif uniquement et ne constitue pas un conseil financier.
+        <div id="hList"></div>
     </div>
 </div>
 
 <script>
-    let appData = JSON.parse(localStorage.getItem('pachecoin_v2_data')) || {
-        portfolio: { capital: 1000, lastPrice: 0, lastSignal: null },
-        history: []
-    };
+    let db = JSON.parse(localStorage.getItem('pache_db')) || { cap: 1000, lastP: 0, lastS: null, trades: [] };
 
+    // COMPTE À REBOURS
     function updateTimer() {
         const now = new Date();
-        const tf = document.getElementById('tfSelect').value;
-        let nextCandle = new Date();
-
-        if(tf === '4h') {
-            const hours = now.getUTCHours();
-            const nextH = (Math.floor(hours / 4) + 1) * 4;
-            nextCandle.setUTCHours(nextH, 0, 0, 0);
+        const timeframe = document.getElementById('tf').value;
+        let target = new Date();
+        if(timeframe === '4h') {
+            target.setUTCHours((Math.floor(now.getUTCHours() / 4) + 1) * 4, 0, 0, 0);
         } else {
-            nextCandle.setUTCHours(24, 0, 0, 0);
+            target.setUTCHours(24, 0, 0, 0);
         }
-
-        const diff = nextCandle - now;
+        const diff = target - now;
         const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
         const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
         const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-        document.getElementById('candleTimer').innerText = `${h}:${m}:${s}`;
+        document.getElementById('timer').innerText = `CLÔTURE: ${h}:${m}:${s}`;
     }
     setInterval(updateTimer, 1000);
 
-    function updateDisplay() {
-        const p = appData.portfolio;
-        const percent = ((p.capital - 1000) / 1000 * 100).toFixed(2);
-        document.querySelector('.perf-val').innerText = `$${p.capital.toLocaleString('en-US', {minimumFractionDigits: 2})} (${percent > 0 ? '+':''}${percent}%)`;
-        document.querySelector('.perf-val').style.color = percent >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
-        renderHistory();
-        updateTimer();
-    }
-
-    function renderHistory() {
-        const container = document.getElementById('tradeHistory');
-        container.innerHTML = '';
-        document.getElementById('tradeCount').innerText = `${appData.history.length} TRADES`;
+    function refreshUI() {
+        const perc = ((db.cap - 1000) / 1000 * 100).toFixed(2);
+        document.getElementById('perfDisplay').innerText = `$${db.cap.toLocaleString(undefined,{minimumFractionDigits:2})} (${perc > 0 ? '+':''}${perc}%)`;
+        document.getElementById('perfDisplay').style.color = perc >= 0 ? 'var(--green)' : 'var(--red)';
         
-        [...appData.history].reverse().forEach(t => {
-            const row = document.createElement('div');
-            row.className = 'history-row';
-            row.innerHTML = `
-                <div>${t.date}<br><small>${t.time}</small></div>
-                <div>${t.type === 'IN' ? 'In' : 'Out'}: ${t.price.toFixed(1)}</div>
-                <div style="text-align:right; color:${t.p >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">${t.p > 0 ? '+':''}${t.p.toFixed(2)}%</div>
-            `;
-            container.appendChild(row);
+        const list = document.getElementById('hList');
+        list.innerHTML = '';
+        db.trades.slice().reverse().forEach(t => {
+            list.innerHTML += `<div class="h-row"><div>${t.d}</div><div>${t.type} @ ${t.p}</div><div style="text-align:right; color:${t.gain >= 0 ? 'var(--green)':'var(--red)'}">${t.gain > 0 ? '+':''}${t.gain.toFixed(2)}%</div></div>`;
         });
+        document.getElementById('count').innerText = db.trades.length;
     }
 
-    async function runAnalysis() {
-        const symbol = document.getElementById('assetSelect').value;
-        const tf = document.getElementById('tfSelect').value;
-        const btn = document.getElementById('btnAnalyze');
-        btn.disabled = true; btn.innerText = "SYNCHRONISATION...";
-
+    async function getSignal() {
+        const symbol = document.getElementById('asset').value;
+        const timeframe = document.getElementById('tf').value;
         try {
-            const resp = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${tf}&limit=50`);
-            const data = await resp.json();
-            const currentPrice = parseFloat(data[data.length-1][4]);
+            const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${timeframe}&limit=2`);
+            const data = await r.json();
+            const p = parseFloat(data[1][4]);
             
-            // Logique simplifiée du signal pour démo
-            const signal = Math.random() > 0.5 ? "BUY" : "SELL";
+            // Simulation signal (on pourra affiner la logique Fusion plus tard)
+            const s = Math.random() > 0.5 ? "BUY" : "SELL";
             
-            document.querySelector('.price-display').innerText = `$${currentPrice.toLocaleString()}`;
-            const sigEl = document.getElementById('mainSignal');
-            sigEl.innerText = signal;
-            sigEl.style.color = signal === "BUY" ? "var(--accent-green)" : "var(--accent-red)";
-            document.querySelector('.order-price').innerText = `$${(currentPrice * 0.998).toLocaleString()}`;
+            document.getElementById('sigText').innerText = s;
+            document.getElementById('sigText').style.color = s === "BUY" ? "var(--green)" : "var(--red)";
+            document.getElementById('curPrice').innerText = "$" + p.toLocaleString();
+            document.getElementById('entryPrice').innerText = "$" + (p * 0.998).toFixed(2);
 
-            // Enregistrement historique si le signal change
-            if(appData.portfolio.lastSignal && appData.portfolio.lastSignal !== signal) {
-                const profit = ((currentPrice - appData.portfolio.lastPrice) / appData.portfolio.lastPrice) * 100;
-                const now = new Date();
-                appData.history.push({
-                    date: now.toLocaleDateString(),
-                    time: now.toLocaleTimeString(),
-                    type: signal === 'SELL' ? 'IN' : 'OUT',
-                    price: currentPrice,
-                    p: profit
-                });
-                appData.portfolio.capital *= (1 + (profit/100));
+            if(db.lastS && db.lastS !== s) {
+                const gain = ((p - db.lastP) / db.lastP) * 100;
+                db.trades.push({ d: new Date().toLocaleDateString(), type: s === 'SELL' ? 'EXIT' : 'ENTRY', p: p.toFixed(2), gain: gain });
+                db.cap *= (1 + (gain/100));
             }
-
-            appData.portfolio.lastPrice = currentPrice;
-            appData.portfolio.lastSignal = signal;
-            localStorage.setItem('pachecoin_v2_data', JSON.stringify(appData));
-            updateDisplay();
-
-        } catch (e) { console.error(e); }
-        btn.disabled = false; btn.innerText = "GÉNÉRER SIGNAL FUSIONNÉ";
+            db.lastP = p; db.lastS = s;
+            localStorage.setItem('pache_db', JSON.stringify(db));
+            refreshUI();
+        } catch(e) { alert("Erreur de connexion"); }
     }
 
-    function resetAll() {
-        if(confirm("Réinitialiser l'historique et le portefeuille ?")) {
-            appData = { portfolio: { capital: 1000, lastPrice: 0, lastSignal: null }, history: [] };
-            localStorage.setItem('pachecoin_v2_data', JSON.stringify(appData));
-            updateDisplay();
-        }
-    }
-
-    updateDisplay();
+    refreshUI();
 </script>
 </body>
 </html>
