@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pachecoin-v8';
+const CACHE_NAME = 'pachecoin-v10-1';
 
 self.addEventListener('install', (e) => {
     self.skipWaiting();
