@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PACHECOIN V15</title>
+    <title>PACHECOIN V16</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #000; --accent: #ff9500; --green: #00ff88; --red: #ff4466; --border: #1a1a1a; }
@@ -21,7 +21,7 @@
         .card { background: #0d0d0d; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         .val { font-size: 1.5rem; font-weight: 700; }
         .signal-box { text-align: center; padding: 25px 0; border: 1px solid var(--border); background: #050505; border-radius: 15px; margin-bottom: 15px; }
-        #sig { font-size: 4.5rem; font-weight: 700; line-height: 1; margin-bottom: 10px; }
+        #sig { font-size: 3.2rem; font-weight: 700; line-height: 1.1; margin-bottom: 15px; text-transform: uppercase; }
         #price { color: #fff; font-size: 1.8rem; font-weight: 700; margin-bottom: 15px; }
         #lastPriceInfo { font-size: 0.75rem; color: #666; text-transform: uppercase; }
         .btn-gen { width: 100%; background: var(--accent); color: #000; border: none; padding: 22px; border-radius: 15px; font-weight: 700; font-family: 'Space Mono'; font-size: 0.9rem; cursor: pointer; }
@@ -47,7 +47,7 @@
     <div id="main" class="page active">
         <div class="card">
             <div style="font-size:0.7rem; color:#aaa; margin-bottom:5px;">Performance <span id="txtAsset">BTC</span> / <span id="txtTF">H4</span></div>
-            <div class="val" id="perfDisplay">$1,000.00 (0.00%)</div>
+            <div class="val" id="perfDisplay">Chargement...</div>
         </div>
 
         <div style="display:flex; gap:10px; margin-bottom:15px;">
@@ -64,7 +64,7 @@
         </div>
 
         <div class="signal-box">
-            <div id="sig" style="color:#111">WAIT</div>
+            <div id="sig" style="color:#111">...</div>
             <div id="price">$0.00</div>
             <div id="lastPriceInfo">--</div>
         </div>
@@ -82,17 +82,15 @@
 </div>
 
 <script>
-    // Initialisation avec perfs distinctes pour chaque crypto
-    const initialData = {
+    const currentMarketInitialData = {
         "BTCUSDT_4h": { cap: 1045.20, lastEntry: 75120.00, trades: [{d:"30/04",t:"16:00",in:75120,out:76394,g:1.69}] },
         "ETHUSDT_4h": { cap: 1032.15, lastEntry: 3820.00, trades: [{d:"30/04",t:"12:00",in:3820,out:3942,g:3.21}] },
         "SOLUSDT_4h": { cap: 1064.40, lastEntry: 182.50, trades: [{d:"30/04",t:"08:00",in:182.5,out:194.2,g:6.41}] },
         "BNBUSDT_4h": { cap: 1022.80, lastEntry: 592.00, trades: [{d:"30/04",t:"04:00",in:592,out:605.5,g:2.28}] }
     };
 
-    let state = JSON.parse(localStorage.getItem('pache_v15')) || initialData;
+    let state = JSON.parse(localStorage.getItem('pache_v16_final')) || currentMarketInitialData;
 
-    // Fonction de formatage forcé sans espaces (Format US)
     function fPrice(num) {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(num);
     }
@@ -110,11 +108,8 @@
         const tf = document.getElementById('tf').value;
         const key = `${asset}_${tf}`;
         if (!state[key]) state[key] = { cap: 1000, trades: [], currentTrade: null, lastEntry: 0 };
-        
         document.getElementById('txtAsset').innerText = asset.replace('USDT','');
         document.getElementById('txtTF').innerText = tf.toUpperCase();
-        document.getElementById('histTitle').innerText = `JOURNAL [${asset.replace('USDT','')} / ${tf.toUpperCase()}]`;
-        
         runLogic();
     }
 
@@ -144,16 +139,16 @@
             const currentPrice = parseFloat(d[d.length - 1][4]);
             
             const sma = d.slice(-20).reduce((a, b) => a + parseFloat(b[4]), 0) / 20;
-            const signal = currentPrice > sma ? "BUY" : "SELL";
+            const signal = currentPrice > sma ? "J'ACHETE" : "HORS MARCHÉ";
 
             document.getElementById('sig').innerText = signal;
-            document.getElementById('sig').style.color = signal === "BUY" ? "var(--green)" : "var(--red)";
+            document.getElementById('sig').style.color = signal === "J'ACHETE" ? "var(--green)" : "var(--red)";
             document.getElementById('price').innerText = fPrice(currentPrice);
 
-            if (!state[key].currentTrade && signal === "BUY") {
+            if (!state[key].currentTrade && signal === "J'ACHETE") {
                 state[key].currentTrade = { in: currentPrice, d: new Date().toLocaleDateString('fr-FR') };
                 state[key].lastEntry = currentPrice;
-            } else if (state[key].currentTrade && signal === "SELL") {
+            } else if (state[key].currentTrade && signal === "HORS MARCHÉ") {
                 const entry = state[key].currentTrade.in;
                 const gain = (((currentPrice - entry) / entry) * 100).toFixed(2);
                 state[key].trades.push({
@@ -164,9 +159,9 @@
                 state[key].cap *= (1 + (gain/100));
                 state[key].currentTrade = null;
             }
-            localStorage.setItem('pache_v15', JSON.stringify(state));
+            localStorage.setItem('pache_v16_final', JSON.stringify(state));
             updateUI();
-        } catch(e) { console.error("Erreur API"); }
+        } catch(e) { console.error("Erreur de synchronisation"); }
     }
 
     function updateUI() {
@@ -187,7 +182,7 @@
                 <div class="h-row">
                     <div style="color:#aaa">${t.d}</div>
                     <div style="text-align:left; flex:1; padding-left:15px;">
-                        IN: ${t.in.toFixed(2)} | OUT: ${t.out.toFixed(2)}
+                        ENTRÉE: ${t.in.toLocaleString('en-US')} | SORTIE: ${t.out.toLocaleString('en-US')}
                     </div>
                     <div style="font-weight:bold; color:${t.g >= 0 ? 'var(--green)' : 'var(--red)'}">${t.g > 0 ? '+':''}${t.g}%</div>
                 </div>`;
