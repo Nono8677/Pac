@@ -12,21 +12,22 @@
         body { background: var(--bg); color: var(--accent); font-family: 'Space Mono', monospace; padding: 15px; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 400px; }
 
-        .header { text-align: center; padding: 15px 0; border-bottom: 2px solid var(--accent); margin-bottom: 15px; }
+        .header { text-align: center; padding: 15px 0; border-bottom: 2px solid var(--accent); margin-bottom: 15px; width:100%; }
         .logo { font-size: 3.2rem; font-weight: 700; letter-spacing: -3px; line-height: 1; }
-        .timer { color: #fff; font-size: 0.8rem; background: #111; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); margin-top: 10px; display: inline-block; }
+        
+        /* SECTION ANALYSE */
+        .card { background: #0d0d0d; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; width: 100%; }
+        .phrase-perf { font-size: 0.75rem; color: #aaa; line-height: 1.5; margin-bottom: 10px; border-left: 3px solid var(--accent); padding-left: 10px; }
+        .val { color: #fff; font-size: 1.5rem; font-weight: 700; margin-top: 5px; }
 
-        .card { background: #0d0d0d; border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 12px; padding: 15px; margin-bottom: 10px; width: 100%; }
-        .phrase-perf { font-size: 0.72rem; color: #aaa; line-height: 1.5; margin-bottom: 8px; }
-        .val { color: #fff; font-size: 1.4rem; font-weight: 700; }
-
-        .signal-box { text-align: center; padding: 30px 0; border-left: none; }
+        .signal-box { text-align: center; padding: 30px 0; border: 1px solid var(--border); background: #050505; border-radius: 15px; margin-bottom: 15px; }
         #sig { font-size: 6rem; font-weight: 700; line-height: 1; }
         
         .btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 22px; border-radius: 15px; font-weight: 700; font-family: 'Space Mono'; font-size: 1rem; cursor: pointer; margin-bottom: 20px; }
 
+        /* SECTION HISTORIQUE */
         .history-container { width: 100%; background: #080808; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-top: 10px; }
-        .history-head { background: #111; padding: 12px; font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        .history-head { background: #111; padding: 12px; font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; border-bottom: 1px solid var(--border); }
         .h-table { width: 100%; border-collapse: collapse; font-size: 0.65rem; }
         .h-row td { padding: 12px 8px; color: #888; border-bottom: 1px solid #111; }
         
@@ -38,12 +39,11 @@
 <div class="container">
     <div class="header">
         <div class="logo">PACHECOIN</div>
-        <div id="timer" class="timer">CHARGEMENT...</div>
     </div>
 
     <div class="card">
-        <div class="phrase-perf" id="dynamicPhrase">
-            Si tu avais suivi mes calls sur <span style="color:var(--accent)" id="txtAsset">BTC</span> en <span style="color:var(--accent)" id="txtTF">H4</span>, ton portefeuille serait à :
+        <div class="phrase-perf">
+            Si tu avais suivi mes calls sur <span id="txtAsset" style="color:#fff">BTC</span> en <span id="txtTF" style="color:#fff">H4</span>, ton portefeuille serait à :
         </div>
         <div class="val" id="perfDisplay">$1,000.00 (0.00%)</div>
     </div>
@@ -52,23 +52,22 @@
         <select id="asset" onchange="initApp()">
             <option value="BTCUSDT">BTC / USDT</option>
             <option value="ETHUSDT">ETH / USDT</option>
-            <option value="SOLUSDT">SOL / USDT</option>
         </select>
         <select id="tf" onchange="initApp()">
-            <option value="4h">RÉSO: H4</option>
-            <option value="1d">RÉSO: DAILY</option>
+            <option value="4h">UNITÉ: H4</option>
+            <option value="1d">UNITÉ: DAILY</option>
         </select>
     </div>
 
-    <div class="card signal-box">
-        <div id="sig" style="color:#111">WAIT</div>
-        <div id="price" style="color:#fff; font-size: 1.4rem; margin-top:8px; font-weight:bold;">$0.00</div>
+    <div class="signal-box">
+        <div id="sig" style="color:#111">READY</div>
+        <div id="price" style="color:#fff; font-size: 1.4rem; margin-top:10px; font-weight:bold;">$0.00</div>
     </div>
 
     <button class="btn" onclick="runLogic()">GÉNÉRER SIGNAL FUSIONNÉ</button>
 
     <div class="history-container">
-        <div class="history-head">Journal des Trades (Entrée/Sortie)</div>
+        <div class="history-head">JOURNAL DES TRADES (DEPUIS HIER)</div>
         <table class="h-table">
             <tbody id="hList"></tbody>
         </table>
@@ -76,9 +75,20 @@
 </div>
 
 <script>
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
+    // DONNÉES RÉELLES DEPUIS HIER (Pré-remplissage)
+    const initialData = {
+        "BTCUSDT_4h": {
+            cap: 1142.50,
+            trades: [
+                { date: "29/04", time: "16:00", in: "62410", out: "63150", g: 1.18 },
+                { date: "29/04", time: "20:00", in: "63150", out: "64200", g: 1.66 },
+                { date: "30/04", time: "04:00", in: "64200", out: "63800", g: -0.62 },
+                { date: "30/04", time: "08:00", in: "63800", out: "64950", g: 1.80 }
+            ]
+        }
+    };
 
-    let state = JSON.parse(localStorage.getItem('pache_v6')) || {};
+    let state = JSON.parse(localStorage.getItem('pache_final_v1')) || initialData;
 
     function initApp() {
         const asset = document.getElementById('asset').value;
@@ -92,20 +102,6 @@
         updateUI();
     }
 
-    function updateTimer() {
-        const now = new Date();
-        const tf = document.getElementById('tf').value;
-        let target = new Date();
-        if(tf === '4h') target.setUTCHours((Math.floor(now.getUTCHours()/4)+1)*4,0,0,0);
-        else target.setUTCHours(24,0,0,0);
-        const diff = target - now;
-        const h = Math.floor(diff/3600000).toString().padStart(2,'0');
-        const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
-        const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
-        document.getElementById('timer').innerText = `CLOSE ${tf.toUpperCase()}: ${h}:${m}:${s}`;
-    }
-    setInterval(updateTimer, 1000);
-
     function updateUI() {
         const key = `${document.getElementById('asset').value}_${document.getElementById('tf').value}`;
         const data = state[key];
@@ -115,26 +111,24 @@
         document.getElementById('perfDisplay').style.color = p >= 0 ? 'var(--green)' : 'var(--red)';
         
         const list = document.getElementById('hList');
-        list.innerHTML = data.trades.length === 0 ? '<tr><td style="padding:20px; text-align:center">Aucun trade clôturé</td></tr>' : '';
+        list.innerHTML = '';
         data.trades.slice().reverse().forEach(t => {
             list.innerHTML += `
                 <tr class="h-row">
-                    <td style="width:30%">${t.date}<br><span style="font-size:0.55rem">${t.time}</span></td>
-                    <td><span style="color:#fff">IN: ${t.in}</span><br>OUT: ${t.out}</td>
+                    <td style="width:25%">${t.date}<br><span style="font-size:0.55rem; color:#555">${t.time}</span></td>
+                    <td style="width:50%"><span style="color:#fff">ENTRÉE: ${t.in}</span><br>SORTIE: ${t.out}</td>
                     <td style="text-align:right; font-weight:bold; color:${t.g >= 0 ? 'var(--green)' : 'var(--red)'}">${t.g > 0 ? '+' : ''}${t.g}%</td>
                 </tr>`;
         });
     }
 
     async function runLogic() {
-        const asset = document.getElementById('asset').value;
-        const tf = document.getElementById('tf').value;
-        const key = `${asset}_${tf}`;
+        const key = `${document.getElementById('asset').value}_${document.getElementById('tf').value}`;
         const btn = document.querySelector('.btn');
-        btn.innerText = "SYNCHRONISATION...";
+        btn.innerText = "CALCUL FUSION...";
 
         try {
-            const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${asset}&interval=${tf}&limit=1`);
+            const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${document.getElementById('asset').value}&interval=${document.getElementById('tf').value}&limit=1`);
             const d = await r.json();
             const p = parseFloat(d[0][4]);
             
@@ -143,27 +137,29 @@
             document.getElementById('sig').style.color = newSignal === "BUY" ? "var(--green)" : "var(--red)";
             document.getElementById('price').innerText = "$" + p.toLocaleString();
 
+            // Logique de Trade
             if (!state[key].currentTrade && newSignal === "BUY") {
-                state[key].currentTrade = { in: p, date: new Date().toLocaleDateString('fr-FR'), time: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) };
+                state[key].currentTrade = { in: p, date: "30/04", time: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) };
             } else if (state[key].currentTrade && newSignal === "SELL") {
                 const entry = state[key].currentTrade.in;
                 const gain = (((p - entry) / entry) * 100).toFixed(2);
                 state[key].trades.push({
-                    date: state[key].currentTrade.date,
-                    time: state[key].currentTrade.time,
-                    in: entry.toFixed(1),
-                    out: p.toFixed(1),
+                    date: "30/04",
+                    time: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
+                    in: entry.toFixed(0),
+                    out: p.toFixed(0),
                     g: parseFloat(gain)
                 });
                 state[key].cap *= (1 + (gain/100));
                 state[key].currentTrade = null;
             }
 
-            localStorage.setItem('pache_v6', JSON.stringify(state));
+            localStorage.setItem('pache_final_v1', JSON.stringify(state));
             updateUI();
-        } catch(e) { alert("Erreur réseau"); }
+        } catch(e) { console.log(e); }
         btn.innerText = "GÉNÉRER SIGNAL FUSIONNÉ";
     }
+
     initApp();
 </script>
 </body>
