@@ -1,15 +1,9 @@
 {
   "name": "Pachecoin Pro",
   "short_name": "Pachecoin",
-  "start_url": "index.html?v=6",
+  "start_url": "index.html?v=market-ready",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#ff9500",
-  "icons": [
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "icons": [{ "src": "icon.png", "sizes": "512x512", "type": "image/png" }]
 }
