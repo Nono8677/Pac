@@ -3,597 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pachecoin Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <title>PACHECOIN PRO</title>
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #000;
-            --accent: #ff9500;
-            --green: #00ff88;
-            --red: #ff4466;
-            --card: #0d0d0d;
-            --border: #1c1c1c;
-            --muted: #444;
-        }
+        :root { --bg: #000; --accent: #ff9500; --green: #00ff88; --red: #ff4466; --border: #1a1a1a; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--accent); font-family: 'Space Mono', monospace; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 400px; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        .header { text-align: center; padding: 15px 0; border-bottom: 2px solid var(--accent); margin-bottom: 15px; }
+        .logo { font-size: 3.2rem; font-weight: 700; letter-spacing: -3px; line-height: 1; }
+        .timer { color: #fff; font-size: 0.8rem; background: #111; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); margin-top: 10px; display: inline-block; }
 
-        body {
-            background: var(--bg);
-            color: var(--accent);
-            font-family: 'Space Mono', monospace;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 16px 16px 80px;
-        }
+        .card { background: #0d0d0d; border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 12px; padding: 15px; margin-bottom: 10px; width: 100%; }
+        .phrase-perf { font-size: 0.72rem; color: #aaa; line-height: 1.5; margin-bottom: 8px; }
+        .val { color: #fff; font-size: 1.4rem; font-weight: 700; }
 
-        .container { width: 100%; max-width: 420px; }
+        .signal-box { text-align: center; padding: 30px 0; border-left: none; }
+        #sig { font-size: 6rem; font-weight: 700; line-height: 1; }
+        
+        .btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 22px; border-radius: 15px; font-weight: 700; font-family: 'Space Mono'; font-size: 1rem; cursor: pointer; margin-bottom: 20px; }
 
-        /* TIMER + PERF en haut, compacts */
-        .top-bar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .top-cell {
-            flex: 1;
-            background: #0a0a0a;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 9px 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-        .top-cell .lbl { font-size: 0.5rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-        .top-cell .val { font-size: 0.9rem; font-weight: 700; }
-        .top-cell .val.green { color: var(--green); }
-        .top-cell .val.red   { color: var(--red); }
-        #timerVal { color: var(--green); }
-
-        /* SELECTS */
-        .selects { display: flex; gap: 8px; margin-bottom: 12px; }
-        select {
-            flex: 1;
-            background: #0d0d0d;
-            color: var(--accent);
-            border: 1px solid var(--border);
-            padding: 11px 10px;
-            border-radius: 10px;
-            font-family: 'Space Mono';
-            font-size: 0.7rem;
-            appearance: none;
-            cursor: pointer;
-        }
-
-        /* NOTIF */
-        .notif-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 14px;
-            background: #0a0a0a;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            margin-bottom: 12px;
-            font-size: 0.6rem;
-            color: var(--muted);
-            text-transform: uppercase;
-        }
-        .toggle {
-            width: 38px; height: 20px;
-            background: #1c1c1c;
-            border-radius: 10px;
-            position: relative;
-            cursor: pointer;
-            border: none;
-            transition: background 0.3s;
-            flex-shrink: 0;
-        }
-        .toggle.on { background: var(--green); }
-        .toggle::after {
-            content: '';
-            position: absolute;
-            top: 3px; left: 3px;
-            width: 14px; height: 14px;
-            background: #000;
-            border-radius: 50%;
-            transition: left 0.3s;
-        }
-        .toggle.on::after { left: 21px; }
-
-        /* TABS */
-        .tabs { display: flex; gap: 6px; margin-bottom: 14px; }
-        .tab {
-            flex: 1;
-            padding: 9px 4px;
-            text-align: center;
-            font-size: 0.55rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            background: #0a0a0a;
-            color: var(--muted);
-            transition: all 0.2s;
-        }
-        .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
-
-        /* PANELS */
-        .panel { display: none; }
-        .panel.active { display: block; }
-
-        /* CARD */
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 12px; }
-
-        /* SIGNAL */
-        .signal-box { text-align: center; padding: 24px 10px; }
-        #sigText {
-            font-family: 'Syne', sans-serif;
-            font-size: 4.5rem;
-            font-weight: 800;
-            line-height: 1;
-            transition: color 0.3s;
-            color: #1c1c1c;
-        }
-        .price { color: #fff; font-size: 1.5rem; margin: 12px 0; }
-        .entry-row {
-            background: rgba(255,149,0,0.06);
-            border: 1px solid rgba(255,149,0,0.1);
-            padding: 9px 12px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            color: #888;
-        }
-        .entry-row span { color: #fff; }
-
-        /* BTN */
-        .btn {
-            width: 100%;
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 18px;
-            border-radius: 14px;
-            font-weight: 700;
-            font-family: 'Space Mono';
-            font-size: 0.85rem;
-            cursor: pointer;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 20px rgba(255,149,0,0.2);
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-        .btn:active { transform: scale(0.98); }
-
-        /* SECTION TITLE */
-        .section-title { font-size: 0.55rem; text-transform: uppercase; color: var(--muted); letter-spacing: 2px; margin-bottom: 10px; }
-
-        /* PF GRID */
-        .pf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .pf-card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
-        .pf-card .label { font-size: 0.5rem; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; }
-        .pf-card .val { font-size: 0.95rem; font-weight: 700; color: #fff; }
-        .pf-card .val.green { color: var(--green); }
-        .pf-card .val.red   { color: var(--red); }
-
-        /* TRADES TABLE */
-        .h-header { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 6px 0; font-size: 0.5rem; color: var(--muted); border-bottom: 1px solid #111; text-transform: uppercase; }
-        .h-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 10px 0; border-bottom: 1px solid #0d0d0d; font-size: 0.62rem; color: #bbb; align-items: center; }
-        .h-row .right { text-align: right; }
-
-        .empty-state { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 0.65rem; line-height: 2; }
-
-        /* GHOST BTN */
-        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 14px; border-radius: 8px; font-family: 'Space Mono'; font-size: 0.55rem; cursor: pointer; }
-        .btn-ghost:hover { border-color: var(--red); color: var(--red); }
-
-        /* CHART PANEL */
-        #pfChart { width: 100% !important; display: block; }
-        .chart-stats { display: flex; flex-direction: column; gap: 8px; padding: 14px; background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; margin-top: 10px; }
-        .chart-row { display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--muted); }
-        .chart-row span:last-child { color: #fff; font-weight: 700; }
-
-        /* DISCLAIMER */
-        .disclaimer {
-            margin-top: 20px;
-            padding: 10px 12px;
-            font-size: 0.5rem;
-            color: #2a2a2a;
-            line-height: 1.7;
-            text-align: center;
-            border-top: 1px solid #111;
-        }
-
-        /* FLASH */
-        @keyframes flash { 0%,100%{opacity:1} 50%{opacity:0.2} }
-        .flash { animation: flash 0.4s ease 2; }
-
-        .loading { opacity: 0.5; pointer-events: none; }
+        .history-container { width: 100%; background: #080808; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-top: 10px; }
+        .history-head { background: #111; padding: 12px; font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        .h-table { width: 100%; border-collapse: collapse; font-size: 0.65rem; }
+        .h-row td { padding: 12px 8px; color: #888; border-bottom: 1px solid #111; }
+        
+        select { background: #111; color: var(--accent); border: 1px solid #222; padding: 12px; border-radius: 10px; font-family: 'Space Mono'; flex: 1; font-size: 0.75rem; }
     </style>
 </head>
 <body>
-<div class="container">
 
-    <!-- TOP BAR: timer + perf -->
-    <div class="top-bar">
-        <div class="top-cell">
-            <div class="lbl">⏱ Clôture bougie</div>
-            <div class="val" id="timerVal">00:00:00</div>
-        </div>
-        <div class="top-cell">
-            <div class="lbl">💼 Portfolio</div>
-            <div class="val" id="perfDisplay">$1,000.00 · +0.00%</div>
-        </div>
+<div class="container">
+    <div class="header">
+        <div class="logo">PACHECOIN</div>
+        <div id="timer" class="timer">CHARGEMENT...</div>
     </div>
 
-    <!-- SELECTS -->
-    <div class="selects">
-        <select id="asset">
+    <div class="card">
+        <div class="phrase-perf" id="dynamicPhrase">
+            Si tu avais suivi mes calls sur <span style="color:var(--accent)" id="txtAsset">BTC</span> en <span style="color:var(--accent)" id="txtTF">H4</span>, ton portefeuille serait à :
+        </div>
+        <div class="val" id="perfDisplay">$1,000.00 (0.00%)</div>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <select id="asset" onchange="initApp()">
             <option value="BTCUSDT">BTC / USDT</option>
             <option value="ETHUSDT">ETH / USDT</option>
             <option value="SOLUSDT">SOL / USDT</option>
-            <option value="BNBUSDT">BNB / USDT</option>
-            <option value="XRPUSDT">XRP / USDT</option>
         </select>
-        <select id="tf" onchange="updateTimer()">
-            <option value="4h">4H SWING</option>
-            <option value="1d">1D TENDANCE</option>
-            <option value="1h">1H SCALP</option>
+        <select id="tf" onchange="initApp()">
+            <option value="4h">RÉSO: H4</option>
+            <option value="1d">RÉSO: DAILY</option>
         </select>
     </div>
 
-    <!-- NOTIF -->
-    <div class="notif-row">
-        <span>🔔 Notifications signal</span>
-        <button class="toggle" id="notifToggle" onclick="toggleNotif()"></button>
+    <div class="card signal-box">
+        <div id="sig" style="color:#111">WAIT</div>
+        <div id="price" style="color:#fff; font-size: 1.4rem; margin-top:8px; font-weight:bold;">$0.00</div>
     </div>
 
-    <!-- TABS -->
-    <div class="tabs">
-        <div class="tab active" onclick="switchTab('signal')">📡 Signal</div>
-        <div class="tab" onclick="switchTab('history')">📊 Historique & PF</div>
-        <div class="tab" onclick="switchTab('chart')">📈 Graphique</div>
+    <button class="btn" onclick="runLogic()">GÉNÉRER SIGNAL FUSIONNÉ</button>
+
+    <div class="history-container">
+        <div class="history-head">Journal des Trades (Entrée/Sortie)</div>
+        <table class="h-table">
+            <tbody id="hList"></tbody>
+        </table>
     </div>
-
-    <!-- ── PANEL SIGNAL ── -->
-    <div class="panel active" id="panel-signal">
-        <div class="card signal-box">
-            <div id="sigText">---</div>
-            <div class="price" id="curPrice">$0.00</div>
-            <div class="entry-row">
-                ENTRY : <span id="entryPrice">---</span> &nbsp;|&nbsp; STOP : <span id="stopPrice">---</span>
-            </div>
-        </div>
-        <button class="btn" id="genBtn" onclick="getSignal()">⚡ GÉNÉRER SIGNAL FUSIONNÉ</button>
-    </div>
-
-    <!-- ── PANEL HISTORIQUE & PF ── -->
-    <div class="panel" id="panel-history">
-        <div class="section-title">Portefeuille</div>
-        <div class="pf-grid">
-            <div class="pf-card"><div class="label">Capital</div><div class="val" id="pfCapital">$1,000.00</div></div>
-            <div class="pf-card"><div class="label">P&L Total</div><div class="val" id="pfPnl">+$0.00</div></div>
-            <div class="pf-card"><div class="label">Trades</div><div class="val" id="pfCount">0</div></div>
-            <div class="pf-card"><div class="label">Win Rate</div><div class="val" id="pfWr">— %</div></div>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <div class="section-title" style="margin:0;">Historique des trades</div>
-            <button class="btn-ghost" onclick="clearTrades()">✕ Effacer</button>
-        </div>
-        <div class="h-header">
-            <div>Date</div><div>Asset</div><div>Action</div><div class="right">P&L</div>
-        </div>
-        <div id="hList"></div>
-    </div>
-
-    <!-- ── PANEL GRAPHIQUE ── -->
-    <div class="panel" id="panel-chart">
-        <div class="section-title">Évolution du capital depuis le lancement</div>
-        <div class="card" style="padding:14px;">
-            <canvas id="pfChart" height="200"></canvas>
-            <div id="chartEmpty" class="empty-state" style="display:none;">
-                Aucun trade enregistré.<br>Le graphique apparaîtra après le 1er trade.
-            </div>
-        </div>
-        <div class="chart-stats">
-            <div class="chart-row"><span>Départ</span><span>$1,000.00</span></div>
-            <div class="chart-row"><span>Actuel</span><span id="chartCurrent">$1,000.00</span></div>
-            <div class="chart-row"><span>Plus haut</span><span id="chartMax" style="color:var(--green)">$1,000.00</span></div>
-            <div class="chart-row"><span>Plus bas</span><span id="chartMin" style="color:var(--red)">$1,000.00</span></div>
-        </div>
-    </div>
-
-    <!-- DISCLAIMER -->
-    <div class="disclaimer">
-        ⚠️ Ceci n'est pas un conseil financier. Je ne suis pas conseiller en investissement.
-        Les signaux générés sont à titre informatif uniquement. Tout investissement comporte des risques,
-        y compris la perte totale du capital. Tradez de manière responsable.
-    </div>
-
 </div>
 
 <script>
-// ── STATE ────────────────────────────────────────────────────
-let db = JSON.parse(localStorage.getItem('pache_db_v3')) || {
-    cap: 1000, lastP: 0, lastS: null, lastAsset: null, trades: [],
-    capHistory: [1000]   // point de départ
-};
-let notifEnabled = false;
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
 
-// ── TIMER ────────────────────────────────────────────────────
-function updateTimer() {
-    const now = new Date();
-    const tf  = document.getElementById('tf').value;
-    let target = new Date();
-    if (tf === '1h') {
-        target = new Date(now);
-        target.setUTCMinutes(60, 0, 0);
-    } else if (tf === '4h') {
-        target.setUTCHours((Math.floor(now.getUTCHours() / 4) + 1) * 4, 0, 0, 0);
-    } else {
-        target.setUTCHours(24, 0, 0, 0);
-    }
-    const diff = Math.max(0, target - now);
-    const h = Math.floor(diff / 3600000).toString().padStart(2,'0');
-    const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2,'0');
-    const s = Math.floor((diff % 60000) / 1000).toString().padStart(2,'0');
-    document.getElementById('timerVal').textContent = `${h}:${m}:${s}`;
-}
-setInterval(updateTimer, 1000);
-updateTimer();
+    let state = JSON.parse(localStorage.getItem('pache_v6')) || {};
 
-// ── REFRESH UI ───────────────────────────────────────────────
-function refreshUI() {
-    const pnl  = db.cap - 1000;
-    const perc = ((pnl / 1000) * 100).toFixed(2);
-    const sign = pnl >= 0 ? '+' : '';
-    const color = pnl >= 0 ? 'var(--green)' : 'var(--red)';
+    function initApp() {
+        const asset = document.getElementById('asset').value;
+        const tf = document.getElementById('tf').value;
+        const key = `${asset}_${tf}`;
 
-    // Top bar perf
-    const perfEl = document.getElementById('perfDisplay');
-    perfEl.textContent = `$${db.cap.toLocaleString('fr-FR',{minimumFractionDigits:2})} · ${sign}${perc}%`;
-    perfEl.style.color = color;
+        if (!state[key]) state[key] = { cap: 1000, trades: [], currentTrade: null };
 
-    // Stats PF
-    document.getElementById('pfCapital').textContent = `$${db.cap.toLocaleString('fr-FR',{minimumFractionDigits:2})}`;
-    const pfPnlEl = document.getElementById('pfPnl');
-    pfPnlEl.textContent = `${sign}$${Math.abs(pnl).toFixed(2)}`;
-    pfPnlEl.className = 'val ' + (pnl >= 0 ? 'green' : 'red');
-
-    document.getElementById('pfCount').textContent = db.trades.length;
-
-    const wins = db.trades.filter(t => t.gain > 0).length;
-    const wr   = db.trades.length > 0 ? ((wins / db.trades.length) * 100).toFixed(0) : null;
-    const pfWrEl = document.getElementById('pfWr');
-    pfWrEl.textContent = wr !== null ? `${wr}%` : '— %';
-    pfWrEl.className   = 'val' + (wr !== null ? (wr >= 50 ? ' green' : ' red') : '');
-
-    // Liste trades
-    const list = document.getElementById('hList');
-    if (db.trades.length === 0) {
-        list.innerHTML = `<div class="empty-state">Aucun trade enregistré.<br>Génère un signal pour commencer.</div>`;
-    } else {
-        list.innerHTML = db.trades.slice().reverse().map(t => `
-            <div class="h-row">
-                <div>${t.d}</div>
-                <div>${t.asset || '—'}</div>
-                <div style="color:${t.type==='BUY'?'var(--green)':'var(--red)'}">${t.type}</div>
-                <div class="right" style="color:${t.gain>=0?'var(--green)':'var(--red)'}">
-                    ${t.gain>=0?'+':''}${t.gain.toFixed(2)}%
-                </div>
-            </div>`).join('');
-    }
-}
-
-// ── SIGNAL ───────────────────────────────────────────────────
-async function getSignal() {
-    const symbol = document.getElementById('asset').value;
-    const tf     = document.getElementById('tf').value;
-    const btn    = document.getElementById('genBtn');
-    btn.textContent = '⏳ Chargement...';
-    btn.classList.add('loading');
-
-    try {
-        const r    = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${tf}&limit=50`);
-        const data = await r.json();
-        const closes = data.map(c => parseFloat(c[4]));
-        const p      = closes[closes.length - 1];
-
-        // RSI simplifié
-        const gains = [], losses = [];
-        for (let i = 1; i < closes.length; i++) {
-            const d = closes[i] - closes[i-1];
-            if (d >= 0) gains.push(d); else losses.push(Math.abs(d));
-        }
-        const avgGain = gains.reduce((a,b)=>a+b,0) / 14;
-        const avgLoss = losses.reduce((a,b)=>a+b,0) / 14;
-        const rsi     = 100 - (100 / (1 + avgGain / (avgLoss || 0.001)));
-        const ema20   = closes.slice(-20).reduce((a,b)=>a+b,0) / 20;
-
-        let s;
-        if      (rsi < 40 && p > ema20) s = 'BUY';
-        else if (rsi > 60 && p < ema20) s = 'SELL';
-        else s = rsi < 50 ? 'BUY' : 'SELL';
-
-        // UI
-        const sigEl = document.getElementById('sigText');
-        sigEl.textContent = s;
-        sigEl.style.color = s === 'BUY' ? 'var(--green)' : 'var(--red)';
-        sigEl.classList.add('flash');
-        setTimeout(() => sigEl.classList.remove('flash'), 900);
-
-        document.getElementById('curPrice').textContent    = '$' + p.toLocaleString('en-US',{minimumFractionDigits:2});
-        document.getElementById('entryPrice').textContent  = '$' + (p * (s==='BUY' ? 0.998 : 1.002)).toFixed(2);
-        document.getElementById('stopPrice').textContent   = '$' + (p * (s==='BUY' ? 0.975 : 1.025)).toFixed(2);
-
-        // Trade si inversion de signal
-        if (db.lastS && db.lastAsset && db.lastS !== s) {
-            const gain    = ((p - db.lastP) / db.lastP * 100) * (db.lastS === 'BUY' ? 1 : -1);
-            const pnlAmt  = db.cap * (gain / 100);
-            db.cap       += pnlAmt;
-            db.trades.push({
-                d: new Date().toLocaleDateString('fr-FR'),
-                asset: db.lastAsset.replace('USDT',''),
-                type: db.lastS,
-                p: db.lastP.toFixed(2),
-                gain
-            });
-            db.capHistory.push(parseFloat(db.cap.toFixed(2)));
-        }
-
-        db.lastP     = p;
-        db.lastS     = s;
-        db.lastAsset = symbol;
-        localStorage.setItem('pache_db_v3', JSON.stringify(db));
-        refreshUI();
-        sendNotif(symbol, s, p, rsi);
-
-    } catch(e) {
-        alert('Erreur de connexion à Binance.');
+        document.getElementById('txtAsset').innerText = asset.replace('USDT', '');
+        document.getElementById('txtTF').innerText = tf.toUpperCase();
+        updateUI();
     }
 
-    btn.textContent = '⚡ GÉNÉRER SIGNAL FUSIONNÉ';
-    btn.classList.remove('loading');
-}
-
-// ── NOTIFICATIONS ─────────────────────────────────────────────
-async function toggleNotif() {
-    const toggle = document.getElementById('notifToggle');
-    if (!notifEnabled) {
-        if (!('Notification' in window)) { alert('Notifications non supportées.'); return; }
-        const perm = await Notification.requestPermission();
-        if (perm === 'granted') { notifEnabled = true; toggle.classList.add('on'); }
-        else alert('Permission refusée. Active les notifications dans les réglages.');
-    } else {
-        notifEnabled = false;
-        toggle.classList.remove('on');
+    function updateTimer() {
+        const now = new Date();
+        const tf = document.getElementById('tf').value;
+        let target = new Date();
+        if(tf === '4h') target.setUTCHours((Math.floor(now.getUTCHours()/4)+1)*4,0,0,0);
+        else target.setUTCHours(24,0,0,0);
+        const diff = target - now;
+        const h = Math.floor(diff/3600000).toString().padStart(2,'0');
+        const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
+        const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
+        document.getElementById('timer').innerText = `CLOSE ${tf.toUpperCase()}: ${h}:${m}:${s}`;
     }
-}
+    setInterval(updateTimer, 1000);
 
-function sendNotif(symbol, signal, price, rsi) {
-    if (!notifEnabled || Notification.permission !== 'granted') return;
-    const asset = symbol.replace('USDT','');
-    const emoji = signal === 'BUY' ? '🟢' : '🔴';
-    new Notification(`${emoji} PACHECOIN — ${signal} ${asset}`, {
-        body: `Prix : $${price.toLocaleString('en-US',{minimumFractionDigits:2})} · RSI : ${rsi.toFixed(1)}`
-    });
-}
-
-// ── TABS ──────────────────────────────────────────────────────
-function switchTab(name) {
-    const names = ['signal','history','chart'];
-    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', names[i] === name));
-    names.forEach(n => {
-        const p = document.getElementById('panel-' + n);
-        if (p) p.classList.toggle('active', n === name);
-    });
-    if (name === 'chart') drawChart();
-}
-
-// ── GRAPHIQUE PF ──────────────────────────────────────────────
-function drawChart() {
-    const canvas  = document.getElementById('pfChart');
-    const emptyEl = document.getElementById('chartEmpty');
-    const points  = db.capHistory;
-
-    if (!points || points.length < 2) {
-        canvas.style.display  = 'none';
-        emptyEl.style.display = 'block';
-        return;
-    }
-    canvas.style.display  = 'block';
-    emptyEl.style.display = 'none';
-
-    const W   = canvas.offsetWidth || 340;
-    const H   = 200;
-    canvas.width  = W;
-    canvas.height = H;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, W, H);
-
-    const pad = { top: 14, bot: 20, left: 6, right: 6 };
-    const cW  = W - pad.left - pad.right;
-    const cH  = H - pad.top  - pad.bot;
-
-    const maxV = Math.max(...points);
-    const minV = Math.min(...points);
-    const range = maxV - minV || 100;
-
-    const toX = i => pad.left + (i / (points.length - 1)) * cW;
-    const toY = v => pad.top  + cH - ((v - minV) / range) * cH;
-
-    // Grille
-    ctx.strokeStyle = '#111';
-    ctx.lineWidth   = 1;
-    for (let i = 0; i <= 4; i++) {
-        const y = pad.top + (cH / 4) * i;
-        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    function updateUI() {
+        const key = `${document.getElementById('asset').value}_${document.getElementById('tf').value}`;
+        const data = state[key];
+        const p = ((data.cap - 1000) / 1000 * 100).toFixed(2);
+        
+        document.getElementById('perfDisplay').innerText = `$${data.cap.toLocaleString(undefined,{minimumFractionDigits:2})} (${p > 0 ? '+':''}${p}%)`;
+        document.getElementById('perfDisplay').style.color = p >= 0 ? 'var(--green)' : 'var(--red)';
+        
+        const list = document.getElementById('hList');
+        list.innerHTML = data.trades.length === 0 ? '<tr><td style="padding:20px; text-align:center">Aucun trade clôturé</td></tr>' : '';
+        data.trades.slice().reverse().forEach(t => {
+            list.innerHTML += `
+                <tr class="h-row">
+                    <td style="width:30%">${t.date}<br><span style="font-size:0.55rem">${t.time}</span></td>
+                    <td><span style="color:#fff">IN: ${t.in}</span><br>OUT: ${t.out}</td>
+                    <td style="text-align:right; font-weight:bold; color:${t.g >= 0 ? 'var(--green)' : 'var(--red)'}">${t.g > 0 ? '+' : ''}${t.g}%</td>
+                </tr>`;
+        });
     }
 
-    // Ligne base $1000
-    const baseY = toY(1000);
-    ctx.strokeStyle = '#2a2a2a';
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath(); ctx.moveTo(pad.left, baseY); ctx.lineTo(W - pad.right, baseY); ctx.stroke();
-    ctx.setLineDash([]);
+    async function runLogic() {
+        const asset = document.getElementById('asset').value;
+        const tf = document.getElementById('tf').value;
+        const key = `${asset}_${tf}`;
+        const btn = document.querySelector('.btn');
+        btn.innerText = "SYNCHRONISATION...";
 
-    // Couleur selon perf finale
-    const isUp   = points[points.length - 1] >= 1000;
-    const lineClr = isUp ? '#00ff88' : '#ff4466';
+        try {
+            const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${asset}&interval=${tf}&limit=1`);
+            const d = await r.json();
+            const p = parseFloat(d[0][4]);
+            
+            const newSignal = Math.random() > 0.5 ? "BUY" : "SELL";
+            document.getElementById('sig').innerText = newSignal;
+            document.getElementById('sig').style.color = newSignal === "BUY" ? "var(--green)" : "var(--red)";
+            document.getElementById('price').innerText = "$" + p.toLocaleString();
 
-    // Fill dégradé
-    const grad = ctx.createLinearGradient(0, pad.top, 0, H);
-    grad.addColorStop(0, isUp ? 'rgba(0,255,136,0.2)' : 'rgba(255,68,102,0.2)');
-    grad.addColorStop(1, 'rgba(0,0,0,0)');
+            if (!state[key].currentTrade && newSignal === "BUY") {
+                state[key].currentTrade = { in: p, date: new Date().toLocaleDateString('fr-FR'), time: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) };
+            } else if (state[key].currentTrade && newSignal === "SELL") {
+                const entry = state[key].currentTrade.in;
+                const gain = (((p - entry) / entry) * 100).toFixed(2);
+                state[key].trades.push({
+                    date: state[key].currentTrade.date,
+                    time: state[key].currentTrade.time,
+                    in: entry.toFixed(1),
+                    out: p.toFixed(1),
+                    g: parseFloat(gain)
+                });
+                state[key].cap *= (1 + (gain/100));
+                state[key].currentTrade = null;
+            }
 
-    ctx.beginPath();
-    ctx.moveTo(toX(0), toY(points[0]));
-    for (let i = 1; i < points.length; i++) ctx.lineTo(toX(i), toY(points[i]));
-    ctx.lineTo(toX(points.length - 1), H - pad.bot);
-    ctx.lineTo(toX(0), H - pad.bot);
-    ctx.closePath();
-    ctx.fillStyle = grad;
-    ctx.fill();
-
-    // Courbe
-    ctx.beginPath();
-    ctx.moveTo(toX(0), toY(points[0]));
-    for (let i = 1; i < points.length; i++) ctx.lineTo(toX(i), toY(points[i]));
-    ctx.strokeStyle = lineClr;
-    ctx.lineWidth   = 2;
-    ctx.lineJoin    = 'round';
-    ctx.stroke();
-
-    // Point final
-    const lastX = toX(points.length - 1);
-    const lastY = toY(points[points.length - 1]);
-    ctx.beginPath();
-    ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
-    ctx.fillStyle = lineClr;
-    ctx.fill();
-
-    // Stats sous le graphique
-    document.getElementById('chartCurrent').textContent = `$${points[points.length-1].toLocaleString('fr-FR',{minimumFractionDigits:2})}`;
-    document.getElementById('chartCurrent').style.color = isUp ? 'var(--green)' : 'var(--red)';
-    document.getElementById('chartMax').textContent = `$${maxV.toLocaleString('fr-FR',{minimumFractionDigits:2})}`;
-    document.getElementById('chartMin').textContent = `$${minV.toLocaleString('fr-FR',{minimumFractionDigits:2})}`;
-}
-
-// ── RESET ─────────────────────────────────────────────────────
-function clearTrades() {
-    if (!confirm('Effacer tout l\'historique et remettre le capital à $1 000 ?')) return;
-    db = { cap: 1000, lastP: 0, lastS: null, lastAsset: null, trades: [], capHistory: [1000] };
-    localStorage.setItem('pache_db_v3', JSON.stringify(db));
-    refreshUI();
-}
-
-// ── INIT ──────────────────────────────────────────────────────
-refreshUI();
+            localStorage.setItem('pache_v6', JSON.stringify(state));
+            updateUI();
+        } catch(e) { alert("Erreur réseau"); }
+        btn.innerText = "GÉNÉRER SIGNAL FUSIONNÉ";
+    }
+    initApp();
 </script>
 </body>
 </html>
