@@ -1,48 +1,44 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>PACHECOIN</title>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PACHECOIN - Analyse</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="app">
-  <header class="header">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div class="logo">PACHE<span>COIN</span></div>
-      <div id="countdown" style="font-size: 0.8rem; color: #f0a500; font-weight: bold; font-family: monospace;"></div>
-    </div>
-    <div id="last-update" style="font-size: 0.7rem; opacity: 0.5; text-align: right; margin-top: 4px;">Initialisation...</div>
-  </header>
 
-  <nav class="nav-tabs">
-    <div class="nav-tab active" data-tab="tab-signal">📊 Signaux</div>
-    <div class="nav-tab" data-tab="tab-portfolio">💼 Portfolio</div>
-  </nav>
+    <header>
+        <h1>PACHECOIN</h1>
+        <p id="last-update">Initialisation...</p>
+        <p id="countdown" style="font-size: 0.8rem; opacity: 0.7;"></p>
+    </header>
 
-  <section id="tab-signal" class="tab-content active">
-    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-      <button id="refresh-btn" class="refresh-btn">↻</button>
-      <select id="signal-tf-select" class="selector"></select>
-    </div>
-    <!-- ZONE CRITIQUE : NE PAS CHANGER CET ID -->
-    <div id="signals-container"></div>
-  </section>
+    <nav class="tabs">
+        <button class="nav-tab active" data-tab="tab-signals">📊 Signaux</button>
+        <button class="nav-tab" data-tab="tab-portfolio">💼 Portfolio</button>
+    </nav>
 
-  <section id="tab-portfolio" class="tab-content">
-    <div class="pf-selectors" style="display: flex; gap: 8px; margin-bottom: 15px;">
-      <select id="pf-pair-select" class="selector" style="flex:2"></select>
-      <select id="pf-tf-select" class="selector" style="flex:1"></select>
-      <button id="pf-refresh-btn" class="pf-refresh-btn">↻</button>
-    </div>
-    <div id="portfolio-container"></div>
-  </section>
+    <main>
+        <!-- Onglet Signaux -->
+        <section id="tab-signals" class="tab-content active">
+            <div class="controls">
+                <select id="signal-tf-select"></select>
+                <button id="refresh-btn">↻ Rafraîchir</button>
+            </div>
+            <div id="signals-container">
+                <!-- Les cartes crypto s'afficheront ici -->
+            </div>
+        </section>
 
-  <footer class="disclaimer">
-    <p>Avertissement : Outil d'aide à l'analyse. Trading = Risque.</p>
-  </footer>
-</div>
-<script src="app.js"></script>
+        <!-- Onglet Portfolio (Ta progression préservée) -->
+        <section id="tab-portfolio" class="tab-content">
+            <div id="portfolio-container">
+                <!-- Le calcul du capital s'affichera ici -->
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
 </body>
 </html>
