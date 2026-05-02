@@ -1,174 +1,79 @@
-'use strict';
+// --- COMPTE À REBOURS SYNCHRONISÉ MARCHÉ ---
+function startMarketCountdown() {
+    const countdownEl = document.getElementById('countdown');
+    
+    setInterval(() => {
+        const now = Date.now();
+        const tf = state.selectedSignalTf;
+        let periodMs;
 
-const CONFIG = {
-    pairs: ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT'],
-    refreshInterval: 60,
-    utBot: { keyValue: 2, atrPeriod: 10 },
-    supertrend: { period: 10, multiplier: 3 },
-    startCapital: 1000,
-    timeframes: [
-        { label: '1H', value: '1h' },
-        { label: '4H', value: '4h' },
-        { label: 'D', value: '1d' },
-        { label: 'W', value: '1w' }
-    ],
-};
+        // Définition des périodes de clôture du marché
+        switch(tf) {
+            case '1h': periodMs = 3600000; break;
+            case '4h': periodMs = 14400000; break;
+            case '1d': periodMs = 86400000; break;
+            case '1w': periodMs = 604800000; break;
+            default: periodMs = 3600000;
+        }
 
-const BINANCE_BASE = 'https://api.binance.com/api/v3';
+        // Calcul du moment exact de la prochaine clôture de bougie
+        const nextCloture = Math.ceil(now / periodMs) * periodMs;
+        const diff = nextCloture - now;
 
-let state = {
-    signals: {},
-    selectedSignalTf: '1d',
-    selectedPair: 'BTCUSDT',
-    selectedTf: '1d',
-    launchDate: getLaunchDate(),
-    loading: false
-};
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
 
-function getLaunchDate() {
-    const stored = localStorage.getItem('pachecoin_launch');
-    if (stored) return new Date(stored);
-    const now = new Date();
-    localStorage.setItem('pachecoin_launch', now.toISOString());
-    return now;
+        countdownEl.innerText = `Clôture bougie : ${h}h ${m}m ${s}s`;
+
+        // Trigger l'analyse à la seconde où la bougie ferme
+        if (diff <= 1000) {
+            setTimeout(analyzeAll, 1500); 
+        }
+    }, 1000);
 }
 
-// --- INDICATEURS ---
-function atr(highs, lows, closes, period) {
-    const tr = closes.map((c, i) => i === 0 ? 0 : Math.max(highs[i]-lows[i], Math.abs(highs[i]-closes[i-1]), Math.abs(lows[i]-closes[i-1])));
-    const out = new Array(closes.length).fill(null);
-    let sum = 0;
-    for(let i=1; i<=period; i++) sum += tr[i];
-    out[period] = sum / period;
-    for(let i=period+1; i<closes.length; i++) out[i] = (out[i-1] * (period-1) + tr[i]) / period;
-    return out;
-}
-
-function calcUTBot(highs, lows, closes) {
-    const { keyValue: kv, atrPeriod } = CONFIG.utBot;
-    const atrVals = atr(highs, lows, closes, atrPeriod);
-    const trailStop = new Array(closes.length).fill(0);
-    const pos = new Array(closes.length).fill(0);
-    for (let i = 1; i < closes.length; i++) {
-        const nLoss = kv * atrVals[i];
-        if (closes[i] > trailStop[i-1] && closes[i-1] > trailStop[i-1]) trailStop[i] = Math.max(trailStop[i-1], closes[i]-nLoss);
-        else if (closes[i] < trailStop[i-1] && closes[i-1] < trailStop[i-1]) trailStop[i] = Math.min(trailStop[i-1], closes[i]+nLoss);
-        else trailStop[i] = closes[i] > trailStop[i-1] ? closes[i]-nLoss : closes[i]+nLoss;
-        if (closes[i-1] <= trailStop[i-1] && closes[i] > trailStop[i]) pos[i] = 1;
-        else if (closes[i-1] >= trailStop[i-1] && closes[i] < trailStop[i]) pos[i] = -1;
-        else pos[i] = pos[i-1];
-    }
-    return pos[pos.length-1] === 1 ? 'bull' : 'bear';
-}
-
-function calcSuperTrend(highs, lows, closes) {
-    const { period, multiplier } = CONFIG.supertrend;
-    const atrVals = atr(highs, lows, closes, period);
-    const upperBand = new Array(closes.length).fill(0);
-    const lowerBand = new Array(closes.length).fill(0);
-    const direction = new Array(closes.length).fill(1);
-    for (let i = period; i < closes.length; i++) {
-        const hl2 = (highs[i] + lows[i]) / 2;
-        upperBand[i] = (hl2 + multiplier * atrVals[i]);
-        lowerBand[i] = (hl2 - multiplier * atrVals[i]);
-        direction[i] = (closes[i] > upperBand[i-1]) ? -1 : (closes[i] < lowerBand[i-1]) ? 1 : direction[i-1];
-    }
-    return { signal: direction[closes.length-1] === -1 ? 'bull' : 'bear', target: upperBand[upperBand.length-1] };
-}
-
-// --- API ---
-async function fetchKlines(symbol, interval) {
-    const resp = await fetch(`${BINANCE_BASE}/klines?symbol=${symbol}&interval=${interval}&limit=300`);
-    const data = await resp.json();
-    return { highs: data.map(k => parseFloat(k[2])), lows: data.map(k => parseFloat(k[3])), closes: data.map(k => parseFloat(k[4])) };
-}
-
-async function fetchPriceAtLaunch(symbol, interval) {
-    const launch = state.launchDate.getTime();
-    const resp = await fetch(`${BINANCE_BASE}/klines?symbol=${symbol}&interval=${interval}&startTime=${launch}&limit=1`);
-    const data = await resp.json();
-    return data.length > 0 ? parseFloat(data[0][4]) : null;
-}
-
-// --- LOGIQUE UI ---
-async function analyzeAll() {
-    state.loading = true;
-    for (const symbol of CONFIG.pairs) {
-        const k = await fetchKlines(symbol, state.selectedSignalTf);
-        const ut = calcUTBot(k.highs, k.lows, k.closes);
-        const st = calcSuperTrend(k.highs, k.lows, k.closes);
-        state.signals[symbol] = { ut, st, price: k.closes[k.closes.length-1] };
-    }
-    state.loading = false;
-    renderSignals();
-}
-
-function renderSignals() {
-    const container = document.getElementById('signals-container');
-    const tf = state.selectedSignalTf.toUpperCase();
-    container.innerHTML = CONFIG.pairs.map(s => {
-        const d = state.signals[s];
-        const isBuy = d.ut === 'bull' && d.st.signal === 'bull';
-        return `
-            <div class="crypto-card">
-                <div class="coin-name">${s} (${tf}) : ${d.price.toFixed(2)} $</div>
-                <div class="verdict ${isBuy ? 'buy' : 'out'}">${isBuy ? "J'ACHÈTE" : "HORS MARCHÉ"}</div>
-                ${!isBuy ? `<div style="font-size:0.8rem; margin-top:8px; opacity:0.6">Cible : ${d.st.target.toFixed(2)} $</div>` : ''}
-            </div>`;
-    }).join('');
-}
-
+// --- PORTFOLIO : CORRECTION DU BUG PERF (INFINITY) ---
 async function refreshPortfolio() {
     const container = document.getElementById('portfolio-container');
-    const pLaunch = await fetchPriceAtLaunch(state.selectedPair, state.selectedTf);
-    const k = await fetchKlines(state.selectedPair, state.selectedTf);
-    const pNow = k.closes[k.closes.length-1];
+    container.innerHTML = "<div class='loading'>Synchronisation...</div>";
     
-    if(!pLaunch) { container.innerHTML = "Prix d'origine introuvable"; return; }
-    
-    const perf = ((pNow - pLaunch) / pLaunch) * 100;
-    const currentCap = CONFIG.startCapital * (1 + perf/100);
-    
-    container.innerHTML = `
-        <div class="portfolio-card">
-            <div class="portfolio-value">${currentCap.toFixed(2)} $</div>
-            <div class="portfolio-gain ${perf >= 0 ? 'up' : 'down'}">${perf >= 0 ? '+' : ''}${perf.toFixed(2)}%</div>
-            <div class="pf-row"><span>Prix Début:</span> <span>${pLaunch.toFixed(2)} $</span></div>
-            <div class="pf-row"><span>Prix Actuel:</span> <span>${pNow.toFixed(2)} $</span></div>
-        </div>`;
+    try {
+        const symbol = state.selectedPair;
+        const interval = state.selectedTf;
+        const launchTs = state.launchDate.getTime();
+
+        // On cherche précisément la bougie qui contient ta date de lancement
+        const urlHisto = `${BINANCE_BASE}/klines?symbol=${symbol}&interval=${interval}&startTime=${launchTs}&limit=1`;
+        const resHisto = await fetch(urlHisto).then(r => r.json());
+        
+        if (!resHisto.length) throw new Error("Date hors limites");
+
+        const pLaunch = parseFloat(resHisto[0][4]); // Prix de clôture de l'époque
+        const k = await fetchKlines(symbol, interval);
+        const pNow = k.closes[k.closes.length - 1];
+
+        // Sécurité mathématique pour éviter Infinity/NaN
+        if (!pLaunch || pLaunch === 0) throw new Error("Prix invalide");
+
+        const perf = ((pNow - pLaunch) / pLaunch) * 100;
+        const currentCap = CONFIG.startCapital * (1 + perf / 100);
+        
+        const isPos = perf >= 0;
+
+        container.innerHTML = `
+            <div class="portfolio-card">
+                <div class="portfolio-value">${currentCap.toFixed(2)} $</div>
+                <div class="portfolio-gain ${isPos ? 'up' : 'down'}">
+                    ${isPos ? '▲' : '▼'} ${perf.toFixed(2)}%
+                </div>
+                <div class="pf-details">
+                    <div class="pf-row"><span>Prix Initial (${interval}):</span> <span>${pLaunch.toFixed(2)} $</span></div>
+                    <div class="pf-row"><span>Prix Actuel:</span> <span>${pNow.toFixed(2)} $</span></div>
+                    <div class="pf-row"><span>Capital de départ:</span> <span>${CONFIG.startCapital} $</span></div>
+                </div>
+            </div>`;
+    } catch (e) {
+        container.innerHTML = `<div class="error-card">⚠️ Erreur : ${e.message}<br>Changez d'unité de temps ou de paire.</div>`;
+    }
 }
-
-function init() {
-    // Tabs
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.nav-tab, .tab-content').forEach(el => el.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById(tab.dataset.tab).classList.add('active');
-            if(tab.dataset.tab === 'tab-portfolio') refreshPortfolio();
-        });
-    });
-
-    // Sélecteurs
-    const sigTf = document.getElementById('signal-tf-select');
-    const pfPair = document.getElementById('pf-pair-select');
-    const pfTf = document.getElementById('pf-tf-select');
-
-    CONFIG.timeframes.forEach(t => {
-        sigTf.add(new Option(t.label, t.value));
-        pfTf.add(new Option(t.label, t.value));
-    });
-    CONFIG.pairs.forEach(p => pfPair.add(new Option(p.replace('USDT',''), p)));
-
-    sigTf.value = state.selectedSignalTf;
-    sigTf.addEventListener('change', (e) => { state.selectedSignalTf = e.target.value; analyzeAll(); });
-    pfPair.addEventListener('change', (e) => { state.selectedPair = e.target.value; refreshPortfolio(); });
-    pfTf.addEventListener('change', (e) => { state.selectedTf = e.target.value; refreshPortfolio(); });
-    
-    document.getElementById('refresh-btn').onclick = analyzeAll;
-    document.getElementById('pf-refresh-btn').onclick = refreshPortfolio;
-
-    analyzeAll();
-}
-
-document.addEventListener('DOMContentLoaded', init);
