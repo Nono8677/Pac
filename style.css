@@ -1,0 +1,23 @@
+:root {
+  --bg-primary: #0b0e11; --bg-secondary: #161a1e; --bg-card: #1e2329;
+  --orange: #f0a500; --green: #0ecb81; --red: #f6465d;
+  --text-secondary: #848e9c; --border: #2b3139; --radius: 12px;
+}
+body { font-family: sans-serif; background: var(--bg-primary); color: white; margin: 0; }
+#app { max-width: 480px; margin: 0 auto; padding-bottom: 80px; }
+.header { background: var(--bg-secondary); padding: 16px; position: sticky; top: 0; z-index: 10; }
+.logo { font-size: 1.4rem; font-weight: 800; color: var(--orange); }
+.nav-tabs { display: flex; background: var(--bg-secondary); border-bottom: 1px solid var(--border); }
+.nav-tab { flex: 1; padding: 12px; text-align: center; color: var(--text-secondary); cursor: pointer; }
+.nav-tab.active { color: var(--orange); border-bottom: 2px solid var(--orange); }
+.tab-content { display: none; padding: 16px; }
+.tab-content.active { display: block; }
+.crypto-card { background: var(--bg-card); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
+.indicator-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 5px; }
+.bull { background: rgba(14,203,129,0.15); color: var(--green); }
+.bear { background: rgba(246,70,93,0.15); color: var(--red); }
+.verdict { margin-top: 10px; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; }
+.buy { background: var(--green); color: black; }
+.out { background: rgba(246,70,93,0.2); color: var(--red); }
+.chart-container { height: 200px; margin: 15px 0; }
+.selector { background: var(--bg-card); color: white; border: 1px solid var(--border); padding: 8px; border-radius: 5px; margin-right: 5px; }
