@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PACHECOIN - Analyse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PACHECOIN</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +11,6 @@
     <header>
         <h1>PACHECOIN</h1>
         <p id="last-update">Initialisation...</p>
-        <p id="countdown" style="font-size: 0.8rem; opacity: 0.7;"></p>
     </header>
 
     <nav class="tabs">
@@ -20,22 +19,17 @@
     </nav>
 
     <main>
-        <!-- Onglet Signaux -->
         <section id="tab-signals" class="tab-content active">
             <div class="controls">
+                <button id="refresh-btn">↻</button>
                 <select id="signal-tf-select"></select>
-                <button id="refresh-btn">↻ Rafraîchir</button>
             </div>
-            <div id="signals-container">
-                <!-- Les cartes crypto s'afficheront ici -->
-            </div>
+            <!-- C'est ici que le JS va injecter les cartes -->
+            <div id="signals-container"></div>
         </section>
 
-        <!-- Onglet Portfolio (Ta progression préservée) -->
         <section id="tab-portfolio" class="tab-content">
-            <div id="portfolio-container">
-                <!-- Le calcul du capital s'affichera ici -->
-            </div>
+            <div id="portfolio-container"></div>
         </section>
     </main>
 
