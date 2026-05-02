@@ -13,10 +13,11 @@
 <body>
 <div id="app">
   <header class="header">
-    <div class="header-top">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
       <div class="logo">PACHE<span>COIN</span></div>
-      <div id="last-update" class="last-update">Chargement…</div>
+      <div id="countdown" style="font-size: 0.8rem; color: #f0a500; font-weight: bold; text-align: right;"></div>
     </div>
+    <div id="last-update" style="font-size: 0.7rem; opacity: 0.5; text-align: right;">Chargement…</div>
   </header>
 
   <nav class="nav-tabs">
@@ -25,7 +26,7 @@
   </nav>
 
   <section id="tab-signal" class="tab-content active">
-    <div class="signal-controls" style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
       <button id="refresh-btn" class="refresh-btn">↻</button>
       <select id="signal-tf-select" class="selector"></select>
     </div>
@@ -41,8 +42,10 @@
     <div id="portfolio-container"></div>
   </section>
 
-  <footer class="disclaimer">
-    <p><strong>Avertissement :</strong> PACHECOIN est un outil d'aide à l'analyse technique. Ces signaux ne constituent pas des conseils en investissement. Le trading comporte des risques de perte de capital.</p>
+  <footer style="padding: 20px; margin-top: auto; border-top: 1px solid #2b3139; opacity: 0.6;">
+    <p style="font-size: 0.7rem; line-height: 1.4; color: #848e9c; margin: 0;">
+      <strong>Avertissement :</strong> PACHECOIN est un outil d'aide à l'analyse. Ces signaux ne sont pas des conseils en investissement. Trading = Risque de perte.
+    </p>
   </footer>
 </div>
 <script src="/app.js"></script>
