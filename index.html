@@ -25,7 +25,10 @@
   </nav>
 
   <section id="tab-signal" class="tab-content active">
-    <button id="refresh-btn" class="refresh-btn">↻ Rafraîchir</button>
+    <div class="signal-controls" style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+      <button id="refresh-btn" class="refresh-btn">↻</button>
+      <select id="signal-tf-select" class="selector"></select>
+    </div>
     <div id="signals-container"></div>
   </section>
 
@@ -37,6 +40,10 @@
     </div>
     <div id="portfolio-container"></div>
   </section>
+
+  <footer class="disclaimer">
+    <p><strong>Avertissement :</strong> PACHECOIN est un outil d'aide à l'analyse technique. Ces signaux ne constituent pas des conseils en investissement. Le trading comporte des risques de perte de capital.</p>
+  </footer>
 </div>
 <script src="/app.js"></script>
 </body>
