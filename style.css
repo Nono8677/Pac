@@ -1,30 +1,30 @@
-/* Style des cartes crypto */
-.crypto-card {
-    background: #1e2329;
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 15px;
-    border: 1px solid #333;
+/* Cache les sections qui n'ont pas la classe 'active' */
+.tab-content {
+    display: none;
 }
 
-/* Le bouton de verdict (La partie qui doit changer) */
-.verdict {
-    padding: 12px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: bold;
-    margin-top: 10px;
+.tab-content.active {
+    display: block;
 }
 
-/* État ACHAT (Majorité 2/3) */
-.verdict.buy {
-    background-color: #0ecb81; /* Vert Binance */
-    color: #000;
+/* Style pour les onglets en haut */
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-/* État ATTENTE (Avec prix SuperTrend) */
-.verdict.out {
-    background-color: #333;
-    color: #f0b90b; /* Jaune pour attirer l'attention sur le prix */
-    border: 1px solid #f0b90b;
+.nav-tab {
+    padding: 10px 20px;
+    border: none;
+    background: #2b3139;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.nav-tab.active {
+    background: #f0b90b; /* Jaune Binance */
+    color: black;
 }
