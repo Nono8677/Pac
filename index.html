@@ -3,47 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PACHECOIN Pro - Analyseur Manuel</title>
+    <title>PACHECOIN - Tribunal 2/3</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Graphiques -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <nav>
-        <button onclick="showPage('analyse')">Analyse</button>
-        <button onclick="showPage('historique')">Historique</button>
-        <button onclick="showPage('graphique')">Graphique</button>
-    </nav>
+    <header>
+        <h1>PACHECOIN 🪙</h1>
+        <nav>
+            <button onclick="show('analyse')">Signal</button>
+            <button onclick="show('perf')">Portefeuille</button>
+        </nav>
+    </header>
 
-    <main id="content">
-        <!-- Section Analyse -->
-        <section id="analyse" class="page">
-            <h2>Signaux du Tribunal (Daily/H4)</h2>
-            <div id="crypto-container">
-                <!-- Les cartes crypto s'afficheront ici -->
-            </div>
-        </section>
+    <div id="analyse" class="tab">
+        <div id="signals">Chargement du tribunal...</div>
+    </div>
 
-        <!-- Section Historique / Saisie -->
-        <section id="historique" class="page" style="display:none;">
-            <h2>Saisie Manuelle des Trades</h2>
-            <div class="trade-form">
-                <input type="text" id="symbol" placeholder="Ex: SOL">
-                <input type="number" id="entryPrice" placeholder="Prix d'entrée">
-                <input type="number" id="levier" placeholder="Levier (ex: 10)">
-                <button onclick="saveTrade()">Enregistrer le Trade</button>
-            </div>
-            <div id="trade-list"></div>
-        </section>
-
-        <!-- Section Graphique -->
-        <section id="graphique" class="page" style="display:none;">
-            <h2>Performance (Base 1000$)</h2>
-            <canvas id="perfChart"></canvas>
-        </section>
-    </main>
+    <div id="perf" class="tab" style="display:none">
+        <canvas id="myChart"></canvas>
+        <div id="trade-history"></div>
+    </div>
 
     <footer>
-        <p><strong>AVERTISSEMENT :</strong> Ce site est un outil d'analyse personnel. Le trading comporte des risques. Ceci n'est pas un conseil en investissement.</p>
+        <p>⚠️ Pas un conseil financier. Tribunal basé sur UT Bot, QQE & SuperTrend.</p>
     </footer>
 
     <script src="app.js"></script>
