@@ -1,337 +1,51 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PACHECOIN V21</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg: #000; --accent: #ff9500; --green: #00ff88; --red: #ff4466; --border: #1a1a1a; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--accent); font-family: 'Space Mono', monospace; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 400px; }
-        .header { text-align: center; padding: 10px 0; border-bottom: 2px solid var(--accent); margin-bottom: 15px; width: 100%; }
-        .logo { font-size: 2.8rem; font-weight: 700; letter-spacing: -3px; }
-        #timer { font-size: 0.85rem; color: #fff; margin-top: 5px; display: block; font-weight: bold; }
-        .tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #111; padding: 5px; border-radius: 12px; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #555; font-family: 'Space Mono'; font-weight: 700; border-radius: 8px; font-size: 0.65rem; cursor: pointer; }
-        .tab-btn.active { background: var(--accent); color: #000; }
-        .page { display: none; width: 100%; }
-        .page.active { display: block; }
-        .card { background: #0d0d0d; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; }
-        .val { font-size: 1.4rem; font-weight: 700; }
-        .signal-box { text-align: center; padding: 25px 0; border: 1px solid var(--border); background: #050505; border-radius: 15px; margin-bottom: 15px; }
-        #sig { font-size: 2.8rem; font-weight: 700; line-height: 1.1; margin-bottom: 15px; }
-        #price { color: #fff; font-size: 1.8rem; font-weight: 700; margin-bottom: 5px; }
-        #entryInfo { font-size: 0.6rem; color: #333; margin-bottom: 10px; letter-spacing: 0.05em; }
-        #lastPriceInfo { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; }
-        #syncStatus { font-size: 0.6rem; color: #555; text-align: center; margin-bottom: 8px; min-height: 14px; }
-        .btn-gen { width: 100%; background: var(--accent); color: #000; border: none; padding: 22px; border-radius: 15px; font-weight: 700; font-family: 'Space Mono'; font-size: 0.9rem; cursor: pointer; margin-bottom: 10px; }
-        .btn-reset { width: 100%; background: transparent; color: #444; border: 1px solid #222; padding: 10px; border-radius: 10px; font-size: 0.6rem; font-family: 'Space Mono'; cursor: pointer; }
-        .h-row { padding: 15px 10px; border-bottom: 1px solid #111; display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; }
-        .h-row.backfill { border-left: 2px solid #333; }
-        select { flex: 1; background: #111; color: var(--accent); border: 1px solid #222; padding: 12px; border-radius: 10px; font-family: 'Space Mono'; outline: none; text-align: center; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PACHECOIN Pro - Analyseur Manuel</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <div class="logo">PACHECOIN</div>
-        <span id="timer">SYNCHRONISATION...</span>
-    </div>
+    <nav>
+        <button onclick="showPage('analyse')">Analyse</button>
+        <button onclick="showPage('historique')">Historique</button>
+        <button onclick="showPage('graphique')">Graphique</button>
+    </nav>
 
-```
-<div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('main', this)">ANALYSE</button>
-    <button class="tab-btn" onclick="switchTab('history', this)">HISTORIQUE</button>
-</div>
+    <main id="content">
+        <!-- Section Analyse -->
+        <section id="analyse" class="page">
+            <h2>Signaux du Tribunal (Daily/H4)</h2>
+            <div id="crypto-container">
+                <!-- Les cartes crypto s'afficheront ici -->
+            </div>
+        </section>
 
-<div id="main" class="page active">
-    <div class="card">
-        <div style="font-size:0.7rem; color:#aaa; margin-bottom:5px;">Performance <span id="txtAsset">--</span></div>
-        <div class="val" id="perfDisplay">CHARGEMENT...</div>
-    </div>
+        <!-- Section Historique / Saisie -->
+        <section id="historique" class="page" style="display:none;">
+            <h2>Saisie Manuelle des Trades</h2>
+            <div class="trade-form">
+                <input type="text" id="symbol" placeholder="Ex: SOL">
+                <input type="number" id="entryPrice" placeholder="Prix d'entrée">
+                <input type="number" id="levier" placeholder="Levier (ex: 10)">
+                <button onclick="saveTrade()">Enregistrer le Trade</button>
+            </div>
+            <div id="trade-list"></div>
+        </section>
 
-    <div style="display:flex; gap:10px; margin-bottom:8px;">
-        <select id="asset" onchange="initApp()">
-            <option value="BTCUSDT">BTC / USDT</option>
-            <option value="ETHUSDT">ETH / USDT</option>
-            <option value="SOLUSDT">SOL / USDT</option>
-            <option value="BNBUSDT">BNB / USDT</option>
-        </select>
-        <select id="tf" onchange="initApp()">
-            <option value="4h">H4</option>
-            <option value="1d">DAILY</option>
-        </select>
-    </div>
+        <!-- Section Graphique -->
+        <section id="graphique" class="page" style="display:none;">
+            <h2>Performance (Base 1000$)</h2>
+            <canvas id="perfChart"></canvas>
+        </section>
+    </main>
 
-    <div id="syncStatus"></div>
+    <footer>
+        <p><strong>AVERTISSEMENT :</strong> Ce site est un outil d'analyse personnel. Le trading comporte des risques. Ceci n'est pas un conseil en investissement.</p>
+    </footer>
 
-    <div class="signal-box">
-        <div id="sig" style="color:#333">WAIT...</div>
-        <div id="price">$ 0.00</div>
-        <div id="entryInfo">SIGNAL SUR CLÔTURE : --</div>
-        <div id="lastPriceInfo">SYNC...</div>
-    </div>
-
-    <button class="btn-gen" onclick="runLogic()">ACTUALISER MAINTENANT</button>
-    <button class="btn-reset" onclick="hardReset()">&#9888;&#65039; RESET DES PRIX ERRONÉS</button>
-</div>
-
-<div id="history" class="page">
-    <div class="card" style="padding:0; background:#080808;">
-        <div style="padding:15px; font-size:0.7rem; color:var(--accent); font-weight:bold; border-bottom:1px solid #111;">JOURNAL DE TRADING</div>
-        <div id="hList"></div>
-    </div>
-</div>
-```
-
-</div>
-
-<script>
-    const STORAGE_KEY = 'pache_v21';
-    const C_ACCENT = '#ff9500';
-    const C_GREEN  = '#00ff88';
-    const C_RED    = '#ff4466';
-
-    // Backfill : on remonte jusqu'à 7 jours en arrière
-    const BACKFILL_DAYS = 7;
-
-    let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-
-    function fPrice(n) {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency', currency: 'USD', minimumFractionDigits: 2
-        }).format(n);
-    }
-
-    function fDate(ts) {
-        return new Date(ts).toLocaleDateString('fr-FR');
-    }
-
-    function hardReset() {
-        if (confirm("Effacer tous les prix d'entrée et repartir de zéro ?")) {
-            localStorage.removeItem(STORAGE_KEY);
-            location.reload();
-        }
-    }
-
-    function switchTab(id, btn) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-        updateUI();
-    }
-
-    function initApp() {
-        const asset = document.getElementById('asset').value;
-        const tf    = document.getElementById('tf').value;
-        const key   = asset + '_' + tf;
-        if (!state[key]) {
-            state[key] = { cap: 1000, trades: [], currentTrade: null, lastEntry: 0, lastSeen: 0 };
-        }
-        // Assure que lastSeen existe sur les anciens states
-        if (!state[key].lastSeen) { state[key].lastSeen = 0; }
-        document.getElementById('txtAsset').innerText = asset.replace('USDT', '');
-        runLogic();
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    // BACKFILL : rejoue toutes les bougies clôturées depuis lastSeen
-    // jusqu'à la bougie fermée la plus récente.
-    // Binance renvoie jusqu'à 1000 bougies — 7 jours en H4 = 42 bougies,
-    // donc on est largement dans les clous.
-    // ─────────────────────────────────────────────────────────────────────
-    function runBackfill(key, candles) {
-        const s = state[key];
-
-        // Toutes les bougies FERMÉES (on exclut la dernière = en cours)
-        const closed = candles.slice(0, -1);
-
-        // On ne rejoue que les bougies postérieures à lastSeen
-        const missed = closed.filter(c => parseInt(c[6]) > s.lastSeen);
-
-        if (missed.length === 0) return 0;
-
-        let replayed = 0;
-
-        missed.forEach(function(candle) {
-            const closeTime  = parseInt(candle[6]);   // timestamp clôture ms
-            const closePrice = parseFloat(candle[4]); // prix de clôture
-
-            // SMA 20 : on prend les 20 bougies fermées avant celle-ci
-            const idx = closed.indexOf(candle);
-            if (idx < 20) return; // pas assez d'historique, on skip
-
-            const window20 = closed.slice(idx - 20, idx).map(c => parseFloat(c[4]));
-            const sma20    = window20.reduce((a, b) => a + b, 0) / 20;
-            const signal   = closePrice > sma20 ? 'BUY' : 'SELL';
-
-            // Anti fantôme : purge si écart > 50%
-            if (s.currentTrade) {
-                const diff = Math.abs(s.currentTrade.in - closePrice) / closePrice;
-                if (diff > 0.5) { s.currentTrade = null; }
-            }
-
-            if (!s.currentTrade && signal === 'BUY') {
-                s.currentTrade = { in: closePrice, d: fDate(closeTime) };
-                s.lastEntry    = closePrice;
-                replayed++;
-            } else if (s.currentTrade && signal === 'SELL') {
-                const entry = s.currentTrade.in;
-                const gain  = parseFloat((((closePrice - entry) / entry) * 100).toFixed(2));
-                s.trades.push({ d: s.currentTrade.d, in: entry, out: closePrice, g: gain, bf: true });
-                s.cap *= (1 + gain / 100);
-                s.currentTrade = null;
-                replayed++;
-            }
-
-            s.lastSeen = closeTime;
-        });
-
-        return replayed;
-    }
-
-    async function runLogic() {
-        const asset = document.getElementById('asset').value;
-        const tf    = document.getElementById('tf').value;
-        const key   = asset + '_' + tf;
-        const syncEl = document.getElementById('syncStatus');
-
-        syncEl.innerText = 'SYNCHRONISATION...';
-        syncEl.style.color = '#555';
-
-        try {
-            // On demande assez de bougies pour couvrir 7j + SMA20
-            // H4 : 7j × 6 bougies = 42 + 20 = 62 → on prend 100
-            // DAILY : 7j + 20 = 27 → on prend 50
-            const limit = tf === '4h' ? 100 : 50;
-
-            const r = await fetch(
-                'https://api.binance.com/api/v3/klines?symbol=' + asset +
-                '&interval=' + tf + '&limit=' + limit
-            );
-            const candles = await r.json();
-
-            // ── BACKFILL ──
-            const replayed = runBackfill(key, candles);
-            if (replayed > 0) {
-                syncEl.innerText = replayed + ' BOUGIE(S) MANQUÉE(S) RECONSTITUÉE(S)';
-                syncEl.style.color = C_ACCENT;
-            } else {
-                syncEl.innerText = 'À JOUR';
-                syncEl.style.color = '#444';
-            }
-
-            // ── SIGNAL LIVE (bougie en cours) ──
-            const livePrice   = parseFloat(candles[candles.length - 1][4]);
-            const closedPrice = parseFloat(candles[candles.length - 2][4]);
-
-            const closes20 = candles.slice(-21, -1).map(c => parseFloat(c[4]));
-            const sma20    = closes20.reduce((a, b) => a + b, 0) / 20;
-            const signal   = closedPrice > sma20 ? "J'ACHETE" : "HORS MARCHÉ";
-
-            document.getElementById('sig').innerText       = signal;
-            document.getElementById('sig').style.color     = signal === "J'ACHETE" ? C_GREEN : C_RED;
-            document.getElementById('price').innerText     = fPrice(livePrice);
-            document.getElementById('entryInfo').innerText = 'SIGNAL SUR CLÔTURE : ' + fPrice(closedPrice);
-
-            // Anti fantôme live
-            const s = state[key];
-            if (s.currentTrade) {
-                if (Math.abs(s.currentTrade.in - livePrice) / livePrice > 0.5) {
-                    s.currentTrade = null;
-                }
-            }
-            if (s.lastEntry) {
-                if (Math.abs(s.lastEntry - livePrice) / livePrice > 0.5) {
-                    s.lastEntry = 0;
-                }
-            }
-
-            // Entrée / sortie sur signal live
-            if (!s.currentTrade && signal === "J'ACHETE") {
-                s.currentTrade = { in: closedPrice, d: new Date().toLocaleDateString('fr-FR') };
-                s.lastEntry    = closedPrice;
-            } else if (s.currentTrade && signal === "HORS MARCHÉ") {
-                const entry = s.currentTrade.in;
-                const gain  = parseFloat((((closedPrice - entry) / entry) * 100).toFixed(2));
-                s.trades.push({ d: s.currentTrade.d, in: entry, out: closedPrice, g: gain });
-                s.cap *= (1 + gain / 100);
-                s.currentTrade = null;
-            }
-
-            // Mise à jour lastSeen avec la dernière bougie fermée
-            const lastClosedTs = parseInt(candles[candles.length - 2][6]);
-            if (lastClosedTs > s.lastSeen) { s.lastSeen = lastClosedTs; }
-
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-            updateUI();
-
-        } catch(e) {
-            console.error('Erreur API Binance :', e);
-            syncEl.innerText = 'ERREUR API — RÉESSAIE';
-            syncEl.style.color = C_RED;
-        }
-    }
-
-    function updateUI() {
-        const asset = document.getElementById('asset').value;
-        const tf    = document.getElementById('tf').value;
-        const key   = asset + '_' + tf;
-        const data  = state[key];
-        if (!data) return;
-
-        const p      = ((data.cap - 1000) / 1000 * 100).toFixed(2);
-        const perfEl = document.getElementById('perfDisplay');
-        perfEl.innerText   = fPrice(data.cap) + ' (' + (p >= 0 ? '+' : '') + p + '%)';
-        perfEl.style.color = p >= 0 ? C_GREEN : C_RED;
-
-        const lastE   = data.currentTrade ? data.currentTrade.in : data.lastEntry;
-        const infoDiv = document.getElementById('lastPriceInfo');
-        if (lastE > 0) {
-            infoDiv.innerText   = data.currentTrade
-                ? "PRIX D'ACHAT : " + fPrice(lastE)
-                : "DERNIER PRIX D'ENTRÉE : " + fPrice(lastE);
-            infoDiv.style.color = '#666';
-        } else {
-            infoDiv.innerText   = "EN ATTENTE D'UN NOUVEAU SIGNAL";
-            infoDiv.style.color = C_ACCENT;
-        }
-
-        const list = document.getElementById('hList');
-        if (data.trades.length === 0) {
-            list.innerHTML = '<div style="padding:20px; color:#444; text-align:center;">Aucun trade enregistré</div>';
-            return;
-        }
-        list.innerHTML = '';
-        data.trades.slice().reverse().forEach(function(t) {
-            var row = document.createElement('div');
-            row.className = 'h-row' + (t.bf ? ' backfill' : '');
-            row.innerHTML =
-                '<div style="color:' + (t.bf ? '#555' : '#aaa') + '">' + t.d + (t.bf ? ' ↺' : '') + '</div>' +
-                '<div style="flex:1; padding-left:15px;">IN: ' + t.in.toFixed(2) + ' | OUT: ' + t.out.toFixed(2) + '</div>' +
-                '<div style="font-weight:bold; color:' + (t.g >= 0 ? C_GREEN : C_RED) + '">' + (t.g > 0 ? '+' : '') + t.g + '%</div>';
-            list.appendChild(row);
-        });
-    }
-
-    setInterval(function() {
-        var now       = Date.now();
-        var tf        = document.getElementById('tf').value;
-        var periodMs  = (tf === '4h' ? 4 : 24) * 3600 * 1000;
-        var nextClose = Math.ceil(now / periodMs) * periodMs;
-        var diff      = nextClose - now;
-        var h = Math.floor(diff / 3600000).toString().padStart(2, '0');
-        var m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
-        var s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-        document.getElementById('timer').innerText = 'CLÔTURE DANS : ' + h + ':' + m + ':' + s;
-    }, 1000);
-
-    initApp();
-</script>
-
+    <script src="app.js"></script>
 </body>
 </html>
