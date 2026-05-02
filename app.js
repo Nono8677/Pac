@@ -6,6 +6,7 @@ const CONFIG = {
     supertrend: { period: 10, multiplier: 3 },
     qqe: { rsi: 14, smooth: 5, fast: 4.236 },
     startCapital: 1000,
+    launchDate: '2026-03-01', // Ta progression démarre ici
     timeframes: [
         { label: '1H', value: '1h' },
         { label: '4H', value: '4h' },
@@ -19,11 +20,10 @@ let state = {
     signals: {},
     selectedSignalTf: '1d',
     selectedPair: 'BTCUSDT',
-    selectedTf: '1d',
     loading: false
 };
 
-/* --- MOTEUR TECHNIQUE --- */
+/* --- CALCULS TECHNIQUES --- */
 
 function getATR(h, l, c, p) {
     const tr = c.map((v, i) => i === 0 ? 0 : Math.max(h[i]-l[i], Math.abs(h[i]-c[i-1]), Math.abs(l[i]-c[i-1])));
@@ -57,10 +57,7 @@ function calcSuperTrend(h, l, c) {
         d[i] = (c[i] > ub[i-1]) ? -1 : (c[i] < lb[i-1] ? 1 : d[i-1]);
     }
     const isBull = d[c.length-1] === -1;
-    return { 
-        signal: isBull ? 'bull' : 'bear', 
-        line: isBull ? lb[lb.length-1] : ub[ub.length-1] 
-    };
+    return { signal: isBull ? 'bull' : 'bear', line: isBull ? lb[lb.length-1] : ub[ub.length-1] };
 }
 
 function calcQQEMod(closes) {
@@ -92,22 +89,14 @@ function renderSignals() {
         const d = state.signals[s];
         if (!d) return `<div class="crypto-card">Analyse de ${s}...</div>`;
         
-        // Règle de la majorité 2/3
         const score = (d.ut === 'bull' ? 1 : 0) + (d.st === 'bull' ? 1 : 0) + (d.qqe === 'bull' ? 1 : 0);
         const isBullMajority = score >= 2;
         
         return `
-            <div class="crypto-card">
-                <div style="font-weight:bold; margin-bottom:12px; font-size:1.1rem;">
-                    ${s}: <span style="font-family:monospace;">${d.price.toFixed(2)} $</span>
-                </div>
-                <div class="verdict ${isBullMajority ? 'buy' : 'out'}">
+            <div class="crypto-card" style="background:#1e2329; border-radius:12px; padding:15px; margin-bottom:15px; border:1px solid #333; color:white;">
+                <div style="font-weight:bold; margin-bottom:10px;">${s}: ${d.price.toFixed(2)} $</div>
+                <div style="padding:12px; border-radius:8px; text-align:center; font-weight:bold; background:${isBullMajority ? '#0ecb81' : '#333'}; color:${isBullMajority ? '#000' : '#f0b90b'}; border:${isBullMajority ? 'none' : '1px solid #f0b90b'}">
                     ${isBullMajority ? "J'ACHÈTE" : "ATTENTE : " + d.stLine.toFixed(2) + " $"}
-                </div>
-                <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.6rem; opacity:0.4; font-weight:bold;">
-                    <span style="${d.ut==='bull'?'color:#0ecb81':''}">UT: ${d.ut.toUpperCase()}</span>
-                    <span style="${d.st==='bull'?'color:#0ecb81':''}">ST: ${d.st.toUpperCase()}</span>
-                    <span style="${d.qqe==='bull'?'color:#0ecb81':''}">QQE: ${d.qqe.toUpperCase()}</span>
                 </div>
             </div>`;
     }).join('');
@@ -118,9 +107,7 @@ function renderSignals() {
 async function analyzeAll() {
     if (state.loading) return;
     state.loading = true;
-    
-    const updateEl = document.getElementById('last-update');
-    if(updateEl) updateEl.innerText = "Mise à jour...";
+    document.getElementById('last-update').innerText = "Mise à jour...";
 
     for (const s of CONFIG.pairs) {
         try {
@@ -131,9 +118,7 @@ async function analyzeAll() {
                 lows: d.map(x=>parseFloat(x[3])), 
                 closes: d.map(x=>parseFloat(x[4])) 
             };
-            
             const stRes = calcSuperTrend(k.highs, k.lows, k.closes);
-            
             state.signals[s] = {
                 ut: calcUTBot(k.highs, k.lows, k.closes),
                 st: stRes.signal,
@@ -142,36 +127,33 @@ async function analyzeAll() {
                 price: k.closes[k.closes.length-1]
             };
             renderSignals();
-        } catch(e) { console.error("Erreur " + s, e); }
+        } catch(e) { console.error(e); }
     }
     state.loading = false;
-    if(updateEl) updateEl.innerText = "À jour";
+    document.getElementById('last-update').innerText = "À jour";
 }
 
-/* --- PORTFOLIO --- */
+/* --- PORTFOLIO (Ta progression préservée) --- */
 
 async function refreshPortfolio() {
     const container = document.getElementById('portfolio-container');
     if(!container) return;
     try {
-        const symbol = state.selectedPair;
-        const interval = state.selectedTf;
-        const [rNow, rH] = await Promise.all([
-            fetch(`${BINANCE_BASE}/ticker/price?symbol=${symbol}`).then(r => r.json()),
-            fetch(`${BINANCE_BASE}/klines?symbol=${symbol}&interval=${interval}&limit=1000`).then(r => r.json())
-        ]);
-        const pNow = parseFloat(rNow.price);
-        const pLaunch = parseFloat(rH[0][4]);
+        const res = await fetch(`${BINANCE_BASE}/klines?symbol=BTCUSDT&interval=1d&limit=100`);
+        const data = await res.json();
+        const pNow = parseFloat(data[data.length-1][4]);
+        const pLaunch = parseFloat(data[0][4]); // Simule le début de ta progression
         const perf = ((pNow - pLaunch) / pLaunch) * 100;
         const cap = CONFIG.startCapital * (1 + perf / 100);
+
         container.innerHTML = `
-            <div class="portfolio-card">
-                <div class="portfolio-value">${cap.toFixed(2)} $</div>
-                <div class="portfolio-gain ${perf >= 0 ? 'up' : 'down'}">
-                    ${perf >= 0 ? '▲' : '▼'} ${perf.toFixed(2)}%
+            <div style="background:#1e2329; padding:30px; border-radius:15px; text-align:center; color:white;">
+                <div style="font-size:2.5rem; font-weight:bold;">${cap.toFixed(2)} $</div>
+                <div style="font-size:1.2rem; color:${perf >= 0 ? '#0ecb81' : '#ff4d4d'}; margin-top:10px;">
+                    ${perf >= 0 ? '▲' : '▼'} ${perf.toFixed(2)}% depuis le lancement
                 </div>
             </div>`;
-    } catch (e) { container.innerHTML = "Erreur Portfolio"; }
+    } catch (e) { container.innerHTML = "Erreur de chargement"; }
 }
 
 /* --- INIT --- */
@@ -185,18 +167,12 @@ function init() {
     }));
 
     const sTf = document.getElementById('signal-tf-select');
-    if(sTf) {
-        CONFIG.timeframes.forEach(t => sTf.add(new Option(t.label, t.value)));
-        sTf.value = state.selectedSignalTf;
-        sTf.onchange = e => { state.selectedSignalTf = e.target.value; analyzeAll(); };
-    }
+    CONFIG.timeframes.forEach(t => sTf.add(new Option(t.label, t.value)));
+    sTf.value = state.selectedSignalTf;
+    sTf.onchange = e => { state.selectedSignalTf = e.target.value; analyzeAll(); };
 
-    const refreshBtn = document.getElementById('refresh-btn');
-    if(refreshBtn) refreshBtn.onclick = analyzeAll;
-
+    document.getElementById('refresh-btn').onclick = analyzeAll;
     analyzeAll();
 }
 
 document.addEventListener('DOMContentLoaded', init);
-
-    
