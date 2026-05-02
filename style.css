@@ -3,21 +3,36 @@
   --orange: #f0a500; --green: #0ecb81; --red: #f6465d;
   --text-secondary: #848e9c; --border: #2b3139; --radius: 12px;
 }
-body { font-family: sans-serif; background: var(--bg-primary); color: white; margin: 0; }
-#app { max-width: 480px; margin: 0 auto; padding-bottom: 80px; }
-.header { background: var(--bg-secondary); padding: 16px; position: sticky; top: 0; z-index: 10; }
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: white; margin: 0; padding: 0; }
+#app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+.header { background: var(--bg-secondary); padding: 16px; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--border); }
 .logo { font-size: 1.4rem; font-weight: 800; color: var(--orange); }
-.nav-tabs { display: flex; background: var(--bg-secondary); border-bottom: 1px solid var(--border); }
-.nav-tab { flex: 1; padding: 12px; text-align: center; color: var(--text-secondary); cursor: pointer; }
-.nav-tab.active { color: var(--orange); border-bottom: 2px solid var(--orange); }
-.tab-content { display: none; padding: 16px; }
+.logo span { color: white; }
+
+.nav-tabs { display: flex; background: var(--bg-secondary); margin-bottom: 10px; }
+.nav-tab { flex: 1; padding: 15px; text-align: center; color: var(--text-secondary); cursor: pointer; font-weight: bold; }
+.nav-tab.active { color: var(--orange); border-bottom: 3px solid var(--orange); }
+
+.tab-content { display: none; padding: 16px; flex-grow: 1; }
 .tab-content.active { display: block; }
+
 .crypto-card { background: var(--bg-card); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
-.indicator-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 5px; }
-.bull { background: rgba(14,203,129,0.15); color: var(--green); }
-.bear { background: rgba(246,70,93,0.15); color: var(--red); }
-.verdict { margin-top: 10px; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; }
-.buy { background: var(--green); color: black; }
-.out { background: rgba(246,70,93,0.2); color: var(--red); }
-.chart-container { height: 200px; margin: 15px 0; }
-.selector { background: var(--bg-card); color: white; border: 1px solid var(--border); padding: 8px; border-radius: 5px; margin-right: 5px; }
+.coin-name { font-weight: bold; margin-bottom: 10px; font-size: 1.1rem; }
+.verdict { padding: 12px; border-radius: 8px; text-align: center; font-weight: 900; letter-spacing: 1px; }
+.buy { background: var(--green); color: #000; }
+.out { background: rgba(246, 70, 93, 0.2); color: var(--red); }
+
+.selector { background: var(--bg-card); color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+.refresh-btn { background: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+/* Portfolio */
+.portfolio-card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); text-align: center; border: 1px solid var(--border); }
+.portfolio-value { font-size: 2.2rem; font-weight: bold; color: white; }
+.portfolio-gain.up { color: var(--green); }
+.portfolio-gain.down { color: var(--red); }
+.pf-row { display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary); }
+
+/* Disclaimer */
+.disclaimer { padding: 20px; margin-top: auto; border-top: 1px solid var(--border); opacity: 0.6; }
+.disclaimer p { font-size: 0.7rem; line-height: 1.4; margin: 0; }
