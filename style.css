@@ -1,20 +1,30 @@
-:root {
-  --bg-primary: #0b0e11; --bg-secondary: #161a1e; --bg-card: #1e2329;
-  --orange: #f0a500; --green: #0ecb81; --red: #f6465d;
-  --text-secondary: #848e9c; --border: #2b3139; --radius: 12px;
+/* Style des cartes crypto */
+.crypto-card {
+    background: #1e2329;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #333;
 }
-body { font-family: -apple-system, sans-serif; background: var(--bg-primary); color: white; margin: 0; }
-#app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
-.header { background: var(--bg-secondary); padding: 16px; border-bottom: 1px solid var(--border); }
-.logo { font-size: 1.4rem; font-weight: 800; color: var(--orange); }
-.nav-tabs { display: flex; background: var(--bg-secondary); }
-.nav-tab { flex: 1; padding: 15px; text-align: center; color: var(--text-secondary); cursor: pointer; }
-.nav-tab.active { color: var(--orange); border-bottom: 3px solid var(--orange); }
-.tab-content { display: none; padding: 16px; }
-.tab-content.active { display: block; }
-.crypto-card { background: var(--bg-card); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); animation: fadeIn 0.3s ease-in; }
-.verdict { padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-top: 10px; }
-.buy { background: var(--green); color: black; }
-.out { background: rgba(246, 70, 93, 0.2); color: var(--red); }
-.selector { background: var(--bg-card); color: white; border: 1px solid var(--border); padding: 8px; border-radius: 6px; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Le bouton de verdict (La partie qui doit changer) */
+.verdict {
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* État ACHAT (Majorité 2/3) */
+.verdict.buy {
+    background-color: #0ecb81; /* Vert Binance */
+    color: #000;
+}
+
+/* État ATTENTE (Avec prix SuperTrend) */
+.verdict.out {
+    background-color: #333;
+    color: #f0b90b; /* Jaune pour attirer l'attention sur le prix */
+    border: 1px solid #f0b90b;
+}
