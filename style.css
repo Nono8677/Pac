@@ -1,26 +1,28 @@
-body { background-color: #0b0e11; color: white; font-family: sans-serif; margin: 0; padding: 20px; }
-.logo-pache { color: #f0b90b; font-size: 1.8rem; margin: 0; }
-#last-update { font-size: 0.9rem; opacity: 0.6; margin-top: 5px; }
+body { background-color: #000000; color: white; font-family: sans-serif; margin: 0; padding: 20px; }
 
-.tabs { display: flex; border-bottom: 1px solid #2b3139; margin: 20px 0; }
-.nav-tab { background: none; border: none; color: gray; padding: 10px 20px; font-weight: bold; }
+header { text-align: center; margin-bottom: 30px; }
+.logo-pache { color: #f0b90b; font-size: 2.5rem; margin: 0; letter-spacing: 2px; }
+#last-update { font-size: 0.8rem; opacity: 0.5; margin-top: 10px; }
+
+.tabs { display: flex; justify-content: center; border-bottom: 1px solid #2b3139; margin-bottom: 20px; }
+.nav-tab { background: none; border: none; color: gray; padding: 10px 15px; cursor: pointer; }
 .nav-tab.active { color: #f0b90b; border-bottom: 2px solid #f0b90b; }
 
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-.crypto-card { background: #1e2329; border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #2b3139; }
+.crypto-card { background: #1e2329; border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #2b3139; cursor: pointer; }
 .card-info { font-weight: bold; margin-bottom: 10px; }
 
 .verdict { padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; }
 .verdict.buy { background-color: #0ecb81; color: black; }
 .verdict.out { background-color: #3b2027; color: #f6465d; }
 
-.target-price { font-size: 0.8rem; color: #848e9c; margin-top: 10px; }
+.target-price { font-size: 0.8rem; color: #848e9c; margin-top: 8px; }
 
-.portfolio-card { background: #1e2329; padding: 20px; border-radius: 15px; text-align: center; }
-.cap-val { font-size: 2.2rem; font-weight: bold; }
+.portfolio-card { background: #1e2329; padding: 30px; border-radius: 15px; text-align: center; }
+.cap-val { font-size: 2.5rem; font-weight: bold; margin: 10px 0; }
 .perf-val.plus { color: #0ecb81; }
 .perf-val.minus { color: #f6465d; }
 
-.warning-text { font-size: 0.7rem; color: #474d57; margin-top: 30px; text-align: center; line-height: 1.4; }
+.warning-text { font-size: 0.7rem; color: #474d57; text-align: center; margin-top: 40px; line-height: 1.5; }
