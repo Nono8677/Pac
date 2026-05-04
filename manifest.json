@@ -1,17 +1,1 @@
-{
-  "short_name": "PACHECOIN",
-  "name": "PACHECOIN — Tribunal des 3",
-  "icons": [
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/2584/2584687.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    }
-  ],
-  "start_url": "/",
-  "background_color": "#0b0e11",
-  "display": "standalone",
-  "scope": "/",
-  "theme_color": "#0b0e11",
-  "description": "Analyse crypto en temps réel via le Tribunal des 3."
-}
+
