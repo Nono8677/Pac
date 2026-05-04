@@ -1,30 +1,44 @@
 body { background-color: #000; color: white; font-family: sans-serif; margin: 0; padding: 15px; }
+
+/* Logo en écriture dorée */
+.logo-pache { 
+    background: linear-gradient(to bottom, #cfa65a 0%, #fff5af 50%, #cfa65a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.8rem; 
+    font-weight: bold;
+    text-align: center;
+    margin: 0; 
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
 header { text-align: center; margin-bottom: 20px; }
-.logo-pache { color: #f0b90b; font-size: 2.2rem; margin: 0; }
-#market-timer { color: #f0b90b; font-weight: bold; margin-top: 5px; font-size: 1.1rem; }
-#last-update { font-size: 0.7rem; opacity: 0.5; }
+#market-timer { color: #f0b90b; font-weight: bold; margin-top: 10px; font-size: 1.1rem; }
 
 .tabs { display: flex; justify-content: center; border-bottom: 1px solid #2b3139; margin-bottom: 20px; }
-.nav-tab { background: none; border: none; color: gray; padding: 12px; font-size: 0.9rem; cursor: pointer; }
+.nav-tab { background: none; border: none; color: gray; padding: 12px; cursor: pointer; }
 .nav-tab.active { color: #f0b90b; border-bottom: 2px solid #f0b90b; }
 
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-.controls { display: flex; justify-content: space-between; margin-bottom: 15px; }
-#refresh-btn { background: #2b3139; color: white; border: none; padding: 8px 15px; border-radius: 5px; }
-select { background: #2b3139; color: white; border: none; padding: 8px; border-radius: 5px; }
+.crypto-card { background: #1e2329; border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid #2b3139; cursor: pointer; }
+.card-info { font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 10px; }
 
-.crypto-card { background: #1e2329; border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid #2b3139; }
-.card-info { font-weight: bold; margin-bottom: 10px; }
-.verdict { padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; }
+.verdict { padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; margin-top: 5px; }
 .verdict.buy { background: #0ecb81; color: black; }
 .verdict.out { background: #3b2027; color: #f6465d; }
-.target-price { font-size: 0.8rem; color: #848e9c; margin-top: 8px; text-align: center; }
 
-.portfolio-card { background: #1e2329; padding: 30px; border-radius: 15px; text-align: center; }
-.cap-val { font-size: 2.5rem; font-weight: bold; margin: 10px 0; }
-.perf-val.plus { color: #0ecb81; }
-.perf-val.minus { color: #f6465d; }
+.entry-info { font-size: 0.85rem; color: #0ecb81; margin-top: 8px; text-align: center; }
+.target-price { font-size: 0.85rem; color: #848e9c; margin-top: 8px; text-align: center; }
 
-.warning-text { font-size: 0.7rem; color: #474d57; text-align: center; margin-top: 30px; }
+/* Style de l'historique dans le Portfolio */
+.trade-row { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 8px 0; 
+    border-bottom: 1px solid #2b3139; 
+    font-size: 0.8rem;
+}
+.trade-profit { font-weight: bold; }
