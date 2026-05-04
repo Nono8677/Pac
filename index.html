@@ -3,40 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PACHECOIN TEST</title>
-    <style>
-        body { background-color: #000; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-        .logo-pache { 
-            background: linear-gradient(to bottom, #cfa65a 0%, #fff5af 50%, #cfa65a 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 2.5rem; font-weight: bold; margin: 20px 0;
-        }
-        .status-box { background: #1e2329; border: 1px solid #f0b90b; padding: 20px; border-radius: 15px; margin-top: 20px; }
-        .price { font-size: 1.5rem; color: #f0b90b; font-weight: bold; }
-    </style>
+    <title>PACHECOIN</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header>
+        <h1 class="logo-pache">PACHECOIN</h1>
+        <div id="market-timer">CLÔTURE : <span id="countdown">--:--:--</span></div>
+        <p id="last-update">Initialisation...</p>
+    </header>
 
-    <h1 class="logo-pache">PACHECOIN</h1>
-    
-    <div id="main-status" class="status-box">
-        <p>Connexion à Binance...</p>
-        <div id="btc-price" class="price">--.-- $</div>
-    </div>
+    <nav class="tabs">
+        <button class="nav-tab active" data-tab="tab-signals">📊 Signaux</button>
+        <button class="nav-tab" data-tab="tab-portfolio">💼 Portfolio</button>
+    </nav>
 
-    <script>
-        async function checkBinance() {
-            try {
-                const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
-                const d = await r.json();
-                document.getElementById('btc-price').innerText = parseFloat(d.price).toFixed(2) + " $";
-                document.getElementById('main-status').innerHTML += "<p style='color:#0ecb81'>SYSTÈME OPÉRATIONNEL</p>";
-            } catch (e) {
-                document.getElementById('main-status').innerHTML = "Erreur de connexion API";
-            }
-        }
-        window.onload = checkBinance;
-    </script>
+    <main>
+        <section id="tab-signals" class="tab-content active">
+            <div class="controls">
+                <button id="refresh-btn">↻</button>
+                <select id="signal-tf-select"></select>
+            </div>
+            <div id="signals-container"></div>
+        </section>
+
+        <section id="tab-portfolio" class="tab-content">
+            <div id="portfolio-container"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p class="warning-text">Avertissement : PACHECOIN est un outil d'aide à l'analyse. Ces signaux ne constituent pas des conseils en investissement. Le trading comporte des risques.</p>
+    </footer>
+
+    <script src="app.js"></script>
 </body>
 </html>
