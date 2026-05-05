@@ -19,3 +19,5 @@ jobs:
 
       - name: Lancer le script de notification
         run: node notify.js
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
