@@ -1,6 +1,6 @@
 ‘use strict’;
 
-const TELEGRAM_TOKEN = ‘8769805273:AAErlHuMB-a3y1lAHHJr4_pSxpgdluSlvVA’;
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const CHAT_IDS = [1523016423];
 
 const CONFIG = {
@@ -101,6 +101,7 @@ return msg;
 }
 
 async function main() {
+if (!TELEGRAM_TOKEN) { console.error(‘TELEGRAM_TOKEN manquant.’); process.exit(1); }
 console.log(‘Analyse PACHECOIN…’);
 const results = [];
 for (const pair of CONFIG.pairs) {
