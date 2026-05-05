@@ -1,0 +1,122 @@
+‘use strict’;
+
+const TELEGRAM_TOKEN = ‘8769805273:AAErlHuMB-a3y1lAHHJr4_pSxpgdluSlvVA’;
+const CHAT_IDS = [1523016423];
+
+const CONFIG = {
+pairs: [‘BTCUSDT’, ‘ETHUSDT’, ‘SOLUSDT’, ‘BNBUSDT’],
+utBot: { keyValue: 2, atrPeriod: 10 },
+supertrend: { period: 10, multiplier: 3 },
+qqe: { rsi: 14, smooth: 5, fast: 4.236 },
+};
+
+const BINANCE_BASE = ‘https://api.binance.com/api/v3’;
+const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_TOKEN}`;
+
+function getATR(h, l, c, p) {
+const tr = c.map((v, i) => i === 0 ? 0 : Math.max(h[i]-l[i], Math.abs(h[i]-c[i-1]), Math.abs(l[i]-c[i-1])));
+let res = new Array(c.length).fill(0);
+let sum = 0; for(let i=1; i<=p; i++) sum += tr[i];
+res[p] = sum / p;
+for(let i=p+1; i<c.length; i++) res[i] = (res[i-1]*(p-1)+tr[i])/p;
+return res;
+}
+
+function calcUTBot(h, l, c) {
+const a = getATR(h, l, c, CONFIG.utBot.atrPeriod);
+let ts = new Array(c.length).fill(0), p = new Array(c.length).fill(0);
+for (let i = 1; i < c.length; i++) {
+let nL = CONFIG.utBot.keyValue * a[i];
+if (c[i] > ts[i-1] && c[i-1] > ts[i-1]) ts[i] = Math.max(ts[i-1], c[i]-nL);
+else if (c[i] < ts[i-1] && c[i-1] < ts[i-1]) ts[i] = Math.min(ts[i-1], c[i]+nL);
+else ts[i] = c[i] > ts[i-1] ? c[i]-nL : c[i]+nL;
+p[i] = (c[i-1] <= ts[i-1] && c[i] > ts[i]) ? 1 : (c[i-1] >= ts[i-1] && c[i] < ts[i]) ? -1 : p[i-1];
+}
+return p[c.length-1] === 1 ? ‘bull’ : ‘bear’;
+}
+
+function calcSuperTrend(h, l, c) {
+const a = getATR(h, l, c, CONFIG.supertrend.period);
+let ub = new Array(c.length).fill(0), lb = new Array(c.length).fill(0), d = new Array(c.length).fill(1);
+for (let i = CONFIG.supertrend.period; i < c.length; i++) {
+let mid = (h[i]+l[i])/2;
+ub[i] = mid + CONFIG.supertrend.multiplier * a[i];
+lb[i] = mid - CONFIG.supertrend.multiplier * a[i];
+d[i] = (c[i] > ub[i-1]) ? -1 : (c[i] < lb[i-1] ? 1 : d[i-1]);
+}
+const isBull = d[c.length-1] === -1;
+return { signal: isBull ? ‘bull’ : ‘bear’, line: isBull ? lb[lb.length-1] : ub[ub.length-1] };
+}
+
+function calcQQEMod(closes) {
+const rsiPeriod = CONFIG.qqe.rsi;
+let changes = closes.map((c, i) => i === 0 ? 0 : c - closes[i-1]);
+let gains = changes.map(v => v > 0 ? v : 0);
+let losses = changes.map(v => v < 0 ? -v : 0);
+let avgG = gains.slice(1, rsiPeriod+1).reduce((a,b)=>a+b)/rsiPeriod;
+let avgL = losses.slice(1, rsiPeriod+1).reduce((a,b)=>a+b)/rsiPeriod;
+let rsi = new Array(closes.length).fill(50);
+for(let i=rsiPeriod+1; i<closes.length; i++) {
+avgG = (avgG*(rsiPeriod-1)+gains[i])/rsiPeriod;
+avgL = (avgL*(rsiPeriod-1)+losses[i])/rsiPeriod;
+rsi[i] = 100 - (100/(1+(avgG/avgL)));
+}
+let rsiMa = new Array(rsi.length).fill(50);
+const alpha = 2/(CONFIG.qqe.smooth+1);
+for(let i=1; i<rsi.length; i++) rsiMa[i] = rsi[i]*alpha + rsiMa[i-1]*(1-alpha);
+return (rsiMa[rsiMa.length-1] > 50 && rsiMa[rsiMa.length-1] > rsiMa[rsiMa.length-2]) ? ‘bull’ : ‘bear’;
+}
+
+async function fetchKlines(pair) {
+const res = await fetch(`${BINANCE_BASE}/klines?symbol=${pair}&interval=1d&limit=200`);
+const data = await res.json();
+return {
+highs: data.map(x => parseFloat(x[2])),
+lows: data.map(x => parseFloat(x[3])),
+closes: data.map(x => parseFloat(x[4]))
+};
+}
+
+async function sendTelegram(chatId, message) {
+await fetch(`${TELEGRAM_API}/sendMessage`, {
+method: ‘POST’,
+headers: { ‘Content-Type’: ‘application/json’ },
+body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: ‘HTML’ })
+});
+}
+
+function buildMessage(results) {
+const date = new Date().toLocaleDateString(‘fr-FR’, { day: ‘2-digit’, month: ‘2-digit’, year: ‘numeric’ });
+let msg = `📊 <b>PACHECOIN — Clôture Daily</b>\n📅 ${date}\n─────────────────\n`;
+for (const r of results) {
+const score = (r.ut === ‘bull’ ? 1 : 0) + (r.st === ‘bull’ ? 1 : 0) + (r.qqe === ‘bull’ ? 1 : 0);
+const isBuy = score >= 2;
+msg += `\n${isBuy ? '✅' : '❌'} <b>${r.pair}</b> — ${r.price.toFixed(2)}$\n`;
+msg += `   ${isBuy ? "J'ACHÈTE" : 'Hors marché'}`;
+if (!isBuy) msg += ` | Cible : ${r.stLine.toFixed(2)}$`;
+msg += `\n`;
+}
+msg += `\n─────────────────\n<i>UTBot + SuperTrend + QQEMod</i>\n⚠️ Pas un conseil en investissement.`;
+return msg;
+}
+
+async function main() {
+console.log(‘Analyse PACHECOIN…’);
+const results = [];
+for (const pair of CONFIG.pairs) {
+try {
+const k = await fetchKlines(pair);
+const st = calcSuperTrend(k.highs, k.lows, k.closes);
+results.push({ pair, ut: calcUTBot(k.highs, k.lows, k.closes), st: st.signal, stLine: st.line, qqe: calcQQEMod(k.closes), price: k.closes[k.closes.length-1] });
+console.log(`✓ ${pair}`);
+} catch(e) { console.error(`✗ ${pair}:`, e.message); }
+}
+const message = buildMessage(results);
+for (const chatId of CHAT_IDS) {
+await sendTelegram(chatId, message);
+console.log(`✓ Envoyé à ${chatId}`);
+}
+console.log(‘Terminé.’);
+}
+
+main();
